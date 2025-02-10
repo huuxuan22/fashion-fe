@@ -1,0 +1,20 @@
+.admin {
+  display: flex; /* Dùng flex để bố trí sidebar và content ngang hàng */
+  height: 100vh; /* Chiều cao toàn màn hình */
+}
+
+.sidebar {
+  width: 15%; /* Chiều rộng cố định cho sidebar */
+  background-color: #f8f9fa; /* Màu nền nhạt cho sidebar */
+  padding: 20px;
+  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1); /* Hiệu ứng đổ bóng */
+  overflow-y: auto; /* Cuộn dọc nếu nội dung quá dài */
+  flex-shrink: 0; /* Không cho sidebar co lại */
+}
+
+.content {
+  flex: 1; /* Chiếm toàn bộ không gian còn lại */
+  padding: 20px;
+  overflow-y: auto; /* Cuộn nội dung khi cần */
+  background-color: #ffffff; /* Màu nền trắng cho content */
+}

@@ -1,0 +1,156 @@
+.verify-code {
+    margin: 0;
+    padding: 0;
+    width: auto;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    overflow: hidden;
+    background-color: rgba(0, 0, 0, 0.6);
+}
+
+.form-verify-code {
+    z-index: 2;
+    background-color: rgba(255, 255, 255, 0.9);
+    padding: 30px;
+    border-radius: 10px;
+    width: 900px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    height: auto;
+  }
+  
+  .form-verify-code h1 {
+    margin-bottom: 30px;
+    color: #333;
+    font-size: 1.8rem;
+    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+  }
+  
+  .form-verify-code input {
+    display: block;
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 5px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 1rem;
+  }
+  
+  .form-verify-code button {
+    width: 32%;
+    padding: 13px;
+    background-color: #042345;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  
+  .form-verify-code button:hover {
+    background-color: #0056b3;
+  }
+  
+  .form-verify-code p {
+    margin-top: 10px;
+    font-size: 0.9rem;
+    color: #555;
+  }
+
+  .vc-title {
+    text-align: center;
+    align-items: center;
+    border-bottom: 3px solid rgb(183, 174, 174);
+    padding-bottom: 40px;
+    margin-bottom: 20px;
+}
+  
+
+.vc-content {
+    align-items: center;
+    text-align: center;
+}
+
+
+
+/* CSS cho các ô input mã xác minh */
+.code-inputs {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 20px;
+    margin-bottom: 40px;
+  }
+  
+  .verify-input {
+    width: 20px;
+    height: 50px;
+    text-align: center;
+    font-size: 24px;
+    border: 2px solid #ccc;
+    border-radius: 5px;
+    outline: none;
+  }
+  
+  .verify-input:focus {
+    border-color: #007bff;
+  }
+  
+  .verify-input:invalid {
+    border-color: red;
+  } 
+
+
+
+
+
+  .action-other {
+    justify-content: space-between;
+    margin-top: 20px;
+    font-size: 1rem;
+  }
+  
+  .action-link {
+    color: #042345;
+    text-decoration: none;
+    font-weight: 500;
+    padding: 8px 15px;
+    transition: all 0.3s ease;
+    margin-left: 10px;
+    margin-right: 10px;
+}
+  
+  .action-link:hover {
+    color: #007bff;
+    text-decoration: underline;
+    cursor: pointer;
+  }
+
+
+  /* Định dạng cho liên kết "Come back" */
+.vc-back-link {
+    font-size: 16px; /* Kích thước chữ */
+    color: #0056b3; /* Màu sắc của liên kết */
+    text-decoration: none; /* Bỏ gạch dưới mặc định */
+    font-weight: bold; /* Đặt chữ in đậm */
+    margin-top: 5px; /* Khoảng cách trên */
+    display: inline-flex; /* Sử dụng flex để căn chỉnh icon và chữ */
+    align-items: center; /* Căn giữa icon và chữ */
+  }
+  
+  /* Định dạng cho icon */
+  .vc-back-link svg {
+    margin-right: 8px; /* Khoảng cách giữa icon và chữ */
+    font-size: 18px; /* Kích thước của icon */
+  }
+  
+  /* Thêm hiệu ứng hover khi người dùng di chuột vào */
+  .vc-back-link:hover {
+    color: #0056b3; /* Đổi màu khi hover */
+    text-decoration: underline; /* Thêm gạch dưới khi hover */
+  }
+  
+  

@@ -1,0 +1,434 @@
+.image-overlay {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    overflow: hidden;
+    position: relative;
+    width: 100%;
+    height: 140vh;
+    overflow-x: hidden; /* Ẩn thanh cuộn ngang */
+    overflow-y: hidden;
+    
+  }
+  
+  .background-image {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* Đảm bảo ảnh không bị méo */
+    filter: brightness(1.1); /* Tăng độ sáng (có thể điều chỉnh) */
+    z-index: 1; /* Ảnh nền nằm dưới các nội dung khác */
+  }
+  
+  .row {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .image-overlay > div {
+    position: relative;
+    z-index: 2; /* Nội dung hiển thị trên ảnh */
+    color: white; /* Đổi màu chữ để dễ đọc trên ảnh nền */
+    font-size: 1.5rem;
+    text-shadow: 0 2px 5px rgba(0, 0, 0, 0.7); /* Thêm hiệu ứng bóng chữ */
+    text-align: center;
+    padding: 30px;
+  }
+  
+
+.col-12 {
+    width: 100%;
+}
+
+/* Responsive thiết lập (tuỳ chọn) */
+@media (max-width: 576px) {
+    .col-12 {
+        width: 100%;
+    }
+}
+
+
+
+/* Cơ bản */
+.col-1 { width: 8.33%; }
+.col-2 { width: 16.66%; }
+.col-3 { width: 25%; }
+.col-4 { width: 33.33%; }
+.col-5 { width: 41.66%; }
+.col-6 { width: 50%; }
+.col-7 { width: 58.33%; }
+.col-8 { width: 66.66%; }
+.col-9 { width: 75%; }
+.col-10 { width: 83.33%; }
+.col-11 { width: 91.66%; }
+.col-12 { width: 100%; }
+
+/* Responsive thiết lập */
+@media (max-width: 576px) { /* sm */
+    .col-sm-1 { width: 8.33%; }
+    .col-sm-2 { width: 16.66%; }
+    .col-sm-3 { width: 25%; }
+    .col-sm-4 { width: 33.33%; }
+    .col-sm-5 { width: 41.66%; }
+    .col-sm-6 { width: 50%; }
+    .col-sm-7 { width: 58.33%; }
+    .col-sm-8 { width: 66.66%; }
+    .col-sm-9 { width: 75%; }
+    .col-sm-10 { width: 83.33%; }
+    .col-sm-11 { width: 91.66%; }
+    .col-sm-12 { width: 100%; }
+}
+
+@media (max-width: 768px) { /* md */
+    .col-md-1 { width: 8.33%; }
+    .col-md-2 { width: 16.66%; }
+    .col-md-3 { width: 25%; }
+    .col-md-4 { width: 33.33%; }
+    .col-md-5 { width: 41.66%; }
+    .col-md-6 { width: 50%; }
+    .col-md-7 { width: 58.33%; }
+    .col-md-8 { width: 66.66%; }
+    .col-md-9 { width: 75%; }
+    .col-md-10 { width: 83.33%; }
+    .col-md-11 { width: 91.66%; }
+    .col-md-12 { width: 100%; }
+}
+
+@media (max-width: 992px) { /* lg */
+    .col-lg-1 { width: 8.33%; }
+    .col-lg-2 { width: 16.66%; }
+    .col-lg-3 { width: 25%; }
+    .col-lg-4 { width: 33.33%; }
+    .col-lg-5 { width: 41.66%; }
+    .col-lg-6 { width: 50%; }
+    .col-lg-7 { width: 58.33%; }
+    .col-lg-8 { width: 66.66%; }
+    .col-lg-9 { width: 75%; }
+    .col-lg-10 { width: 83.33%; }
+    .col-lg-11 { width: 91.66%; }
+    .col-lg-12 { width: 100%; }
+}
+
+@media (max-width: 1200px) { /* xl */
+    .col-xl-1 { width: 8.33%; }
+    .col-xl-2 { width: 16.66%; }
+    .col-xl-3 { width: 25%; }
+    .col-xl-4 { width: 33.33%; }
+    .col-xl-5 { width: 41.66%; }
+    .col-xl-6 { width: 50%; }
+    .col-xl-7 { width: 58.33%; }
+    .col-xl-8 { width: 66.66%; }
+    .col-xl-9 { width: 75%; }
+    .col-xl-10 { width: 83.33%; }
+    .col-xl-11 { width: 91.66%; }
+    .col-xl-12 { width: 100%; }
+}
+
+@media (min-width: 1400px) { /* xxl */
+    .col-xxl-1 { width: 8.33%; }
+    .col-xxl-2 { width: 16.66%; }
+    .col-xxl-3 { width: 25%; }
+    .col-xxl-4 { width: 33.33%; }
+    .col-xxl-5 { width: 41.66%; }
+    .col-xxl-6 { width: 50%; }
+    .col-xxl-7 { width: 58.33%; }
+    .col-xxl-8 { width: 66.66%; }
+    .col-xxl-9 { width: 75%; }
+    .col-xxl-10 { width: 83.33%; }
+    .col-xxl-11 { width: 91.66%; }
+    .col-xxl-12 { width: 100%; }
+}
+
+
+.image-overlay {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  overflow: hidden;
+  background-color: rgba(0, 0, 0, 0.6);
+}
+
+.background-image {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: 1;
+  filter: brightness(0.8);
+}
+
+.form-login {
+  z-index: 2;
+  background-color: rgba(255, 255, 255, 0.9);
+  padding: 30px;
+  border-radius: 10px;
+  width: 600px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+  height: auto;
+}
+
+.form-login h1 {
+  margin-bottom: 30px;
+  color: #333;
+  font-size: 1.8rem;
+  font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+}
+
+.form-login input {
+    display: block;
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 5px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  font-size: 1rem;
+}
+
+.form-login button {
+  width: 100%;
+  padding: 13px;
+  background-color: #042345;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.form-login button:hover {
+  background-color: #0056b3;
+}
+
+.form-login p {
+  margin-top: 10px;
+  font-size: 0.9rem;
+  color: #555;
+}
+
+
+  
+
+  /* Kiểu lỗi */
+
+  
+  /* Các trường nhập */
+  .username-field,
+  .password-field {
+    margin-bottom: 20px;
+  }
+
+  .username-field .error-message  p{
+    text-align: left;
+    color: rgb(249, 2, 2);
+}
+.username-field {
+    width: 100%;
+    height: auto;
+  }
+  input {
+    width: 100%;
+    padding: 10px;
+    font-size: 1rem;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+  }
+  
+  input:focus {
+    border-color: #93b7de;
+    outline: none;
+  }
+  
+
+  
+  .error-message {
+    width: 100%;
+    color: red;
+    font-size: 0.9rem;
+    margin-top: 5px;
+  }
+  
+  .error p {
+    margin: 0;
+  }
+
+
+
+  /* Kiểu dáng cho trường mật khẩu */
+.password-field {
+    position: relative;
+    display: flex;
+    align-items: center;
+  }
+  
+  .password-field input {
+    flex: 1;
+    padding-right: 40px; /* Chừa khoảng trống cho icon */
+  }
+  
+  .toggle-password {
+    transform: translateY(-40px);
+    position: absolute;
+    right: 10px;
+    cursor: pointer;
+    font-size: 1.2rem;
+    color: #555;
+    user-select: none; /* Ngăn người dùng chọn text của biểu tượng */
+  }
+  .password-field-input {
+    width: 100%;
+  }
+  .toggle-password:hover {
+    color: #007bff;
+  }
+  .password-field .error-message {
+    width: 100%;
+  }
+   .error-message-password p {
+    text-align: left;
+    transform: translateY(-15px);
+    color: red;
+
+  }
+
+  .password-field-input {
+    width: 100%;
+  }
+
+
+  /* ĐĂNG NHẬP BÊN THỨ 3 */
+
+ 
+
+  /* Đặt các nút theo chiều dọc với khoảng cách giữa chúng */
+/* Đặt các nút theo hàng ngang */
+.login-3rd {
+    margin-top: 30px;
+    margin-bottom: 20px;
+    display: flex;
+    justify-content: space-between; /* Căn giữa các nút và chia đều không gian */
+    gap: 10px; /* Khoảng cách giữa các nút */
+    width: 100%;
+  }
+  
+  /* Kiểu dáng chung cho các nút */
+  .login-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px 30px; /* Điều chỉnh kích thước của nút */
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+    color: white;
+    flex: 1; /* Mỗi nút chiếm 1 phần không gian */
+    transition: background-color 0.3s; /* Hiệu ứng khi hover */
+    max-width: 200px; /* Giới hạn kích thước của nút */
+  }
+  
+  /* Hover effect cho các nút */
+  .login-button:hover {
+    opacity: 0.9;
+  }
+  
+  /* Các nút sẽ có màu sắc riêng */
+  .login-button i {
+    margin-right: 10px; /* Khoảng cách giữa icon và text */
+  }
+
+  
+  .login-link {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 12px 20px; /* Điều chỉnh kích thước của liên kết */
+    text-decoration: none;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+    color: white;
+    background-color: #db4437; /* Màu nền mặc định */
+    transition: background-color 0.3s; /* Hiệu ứng khi hover */
+    max-width: 200px; /* Giới hạn kích thước của liên kết */
+  }
+  
+  .login-link:hover {
+    opacity: 0.9;
+  }
+  
+  .login-link i {
+    margin-right: 10px; /* Khoảng cách giữa icon và text */
+  }
+  
+  /* Liên kết liên hệ (Zalo, Số điện thoại) */
+  .contact-info {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    gap: 10px; /* Khoảng cách giữa các liên kết */
+  }
+  
+  .contact-link {
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    color: #333;
+    transition: color 0.3s;
+  }
+  
+  .contact-link:hover {
+    border: 1px solid blue;
+    color: #1c04f4; /* Đổi màu khi hover */
+  }
+  
+  .contact-link i {
+    margin-right: 10px; /* Khoảng cách giữa icon và text */
+  }
+
+  .contact {
+    width: 100%;
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+  }
+
+  /* Kiểu dáng cho liên kết "Quên mật khẩu" */
+.forgot-password {
+    text-align: center;
+    margin-top: 15px;
+  }
+  
+  .forgot-password-link {
+    color: #007bff; /* Màu sắc của liên kết */
+    text-decoration: none; /* Loại bỏ gạch chân */
+    font-size: 14px; /* Kích thước chữ */
+    transition: color 0.3s;
+    float: right;
+    margin-right: 20px;
+    margin-bottom: 40px;
+  }
+  
+  .forgot-password-link:hover {
+    color: #0056b3; /* Màu khi hover */
+  }
+  
+  
+  
+  

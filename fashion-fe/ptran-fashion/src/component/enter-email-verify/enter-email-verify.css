@@ -1,0 +1,76 @@
+.enter-email-verify {
+    margin: 0;
+    padding: 0;
+    width: auto;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    overflow: hidden;
+    background-color: rgba(0, 0, 0, 0.6);
+}
+
+.form-enter-email-verify {
+    z-index: 2;
+    background-color: rgba(255, 255, 255, 0.9);
+    padding: 30px;
+    border-radius: 10px;
+    width: 500px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    height: auto;
+  }
+  
+  .form-enter-email-verify h1 {
+    margin-bottom: 30px;
+    color: #333;
+    font-size: 1.8rem;
+    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+  }
+  
+  .form-enter-email-verify input {
+    display: block;
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 5px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 1rem;
+  }
+  
+  .form-enter-email-verify button {
+    margin-top: 30px;
+    width: 100%;
+    padding: 13px;
+    background-color: #042345;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  
+  .form-enter-email-verify button:hover {
+    background-color: #0056b3;
+  }
+  
+  .form-enter-email-verify p {
+    margin-top: 10px;
+    font-size: 0.9rem;
+    color: #555;
+  }
+
+  .error-message {
+    width: 100%;
+    color: red;
+    font-size: 0.9rem;
+    margin-bottom: 20px;
+    text-align: left;
+  }
+  
+  .error-message p {
+    color: red;
+    margin: 0;
+    text-align: left;
+  }

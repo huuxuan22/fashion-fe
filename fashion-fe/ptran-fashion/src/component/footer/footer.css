@@ -1,0 +1,338 @@
+.footer {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    overflow: hidden;
+}
+
+.row {
+    display: flex;
+    flex-wrap: wrap;
+    margin-left: -15px;
+    margin-right: -15px;
+    justify-content: space-between;
+    align-items: center;
+}
+/* Cơ bản */
+.col-1 { width: 8.33%; }
+.col-2 { width: 16.66%; }
+.col-3 { width: 25%; }
+.col-4 { width: 33.33%; }
+.col-5 { width: 41.66%; }
+.col-6 { width: 50%; }
+.col-7 { width: 58.33%; }
+.col-8 { width: 66.66%; }
+.col-9 { width: 75%; }
+.col-10 { width: 83.33%; }
+.col-11 { width: 91.66%; }
+.col-12 { width: 100%; }
+
+/* Responsive thiết lập */
+@media (max-width: 576px) { /* sm */
+    .col-sm-1 { width: 8.33%; }
+    .col-sm-2 { width: 16.66%; }
+    .col-sm-3 { width: 25%; }
+    .col-sm-4 { width: 33.33%; }
+    .col-sm-5 { width: 41.66%; }
+    .col-sm-6 { width: 50%; }
+    .col-sm-7 { width: 58.33%; }
+    .col-sm-8 { width: 66.66%; }
+    .col-sm-9 { width: 75%; }
+    .col-sm-10 { width: 83.33%; }
+    .col-sm-11 { width: 91.66%; }
+    .col-sm-12 { width: 100%; }
+}
+
+@media (max-width: 768px) { /* md */
+    .col-md-1 { width: 8.33%; }
+    .col-md-2 { width: 16.66%; }
+    .col-md-3 { width: 25%; }
+    .col-md-4 { width: 33.33%; }
+    .col-md-5 { width: 41.66%; }
+    .col-md-6 { width: 50%; }
+    .col-md-7 { width: 58.33%; }
+    .col-md-8 { width: 66.66%; }
+    .col-md-9 { width: 75%; }
+    .col-md-10 { width: 83.33%; }
+    .col-md-11 { width: 91.66%; }
+    .col-md-12 { width: 100%; }
+}
+
+@media (max-width: 992px) { /* lg */
+    .col-lg-1 { width: 8.33%; }
+    .col-lg-2 { width: 16.66%; }
+    .col-lg-3 { width: 25%; }
+    .col-lg-4 { width: 33.33%; }
+    .col-lg-5 { width: 41.66%; }
+    .col-lg-6 { width: 50%; }
+    .col-lg-7 { width: 58.33%; }
+    .col-lg-8 { width: 66.66%; }
+    .col-lg-9 { width: 75%; }
+    .col-lg-10 { width: 83.33%; }
+    .col-lg-11 { width: 91.66%; }
+    .col-lg-12 { width: 100%; }
+}
+
+@media (max-width: 1200px) { /* xl */
+    .col-xl-1 { width: 8.33%; }
+    .col-xl-2 { width: 16.66%; }
+    .col-xl-3 { width: 25%; }
+    .col-xl-4 { width: 33.33%; }
+    .col-xl-5 { width: 41.66%; }
+    .col-xl-6 { width: 50%; }
+    .col-xl-7 { width: 58.33%; }
+    .col-xl-8 { width: 66.66%; }
+    .col-xl-9 { width: 75%; }
+    .col-xl-10 { width: 83.33%; }
+    .col-xl-11 { width: 91.66%; }
+    .col-xl-12 { width: 100%; }
+}
+
+@media (min-width: 1400px) { /* xxl */
+    .col-xxl-1 { width: 8.33%; }
+    .col-xxl-2 { width: 16.66%; }
+    .col-xxl-3 { width: 25%; }
+    .col-xxl-4 { width: 33.33%; }
+    .col-xxl-5 { width: 41.66%; }
+    .col-xxl-6 { width: 50%; }
+    .col-xxl-7 { width: 58.33%; }
+    .col-xxl-8 { width: 66.66%; }
+    .col-xxl-9 { width: 75%; }
+    .col-xxl-10 { width: 83.33%; }
+    .col-xxl-11 { width: 91.66%; }
+    .col-xxl-12 { width: 100%; }
+}
+
+.product-teasers-link:hover {
+    cursor: pointer;
+}
+
+.instagram-item {
+    color: 1px solid black;
+    width: 100%;
+    height: 30px;
+}
+.col-sm-6.col-md-4.col-lg-2.product-teasers-link {
+    position: relative; /* Cần thiết để xử lý vị trí của các phần tử con */
+    overflow: hidden;   /* Giới hạn các phần tử con không vượt ra ngoài */
+}
+
+/* Hình ảnh */
+.product-teasear-img {
+    position: relative;
+    transition: transform 0.3s ease, filter 0.3s ease;
+}
+
+.product-teasear-img img {
+    width: 100%;
+    height: auto;
+    transition: transform 0.3s ease, filter 0.3s ease;
+}
+
+/* Hiệu ứng khi hover */
+.col-sm-6.col-md-4.col-lg-2.product-teasers-link:hover .product-teasear-img img {
+    transform: scale(1.2); /* Phóng to hình ảnh */
+    filter: blur(2px); /* Làm mờ hình ảnh */
+}
+.col-sm-6.col-md-4.col-lg-2.product-teasers-link:hover a {
+    font-weight: bold;
+}
+
+/* Căn giữa icon và tiêu đề */
+.product-teasers-instagram {
+    width: 200px;
+    position: absolute;
+    top: 50%; /* Đặt phần tử ở giữa theo chiều dọc */
+    left: 50%; /* Đặt phần tử ở giữa theo chiều ngang */
+    transform: translate(-50%, -50%); /* Căn giữa hoàn hảo */
+    opacity: 0; /* Ban đầu ẩn */
+    transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+/* Khi hover, icon và tiêu đề sẽ xuất hiện và nhảy lên */
+.col-sm-6.col-md-4.col-lg-2.product-teasers-link:hover .product-teasers-instagram {
+    opacity: 1;
+    transform: translate(-50%, -50%) translateY(-10px); /* Nhảy lên một chút */
+}
+
+/* Đảm bảo link không có gạch chân */
+.product-teasers-instagram a {
+    text-decoration: none;
+    color: black;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+/* Cải thiện khoảng cách giữa icon và tên */
+.product-teasers-instagram .fa-instagram {
+    margin-right: 8px;
+}
+
+
+
+.product-teasear-img img {
+    width: 100%;
+    height: auto;
+    transition: transform 0.3s ease, filter 0.3s ease; /* Thêm hiệu ứng zoom và mờ */
+}
+
+/* Hiệu ứng khi hover */
+.col-sm-6.col-md-4.col-lg-2:hover .product-teasear-img img {
+    transform: scale(1.1); /* Phóng to hình ảnh */
+    filter: blur(3px); /* Làm mờ hình ảnh */
+}
+
+/* Hiệu ứng cho phần tử chứa icon và tiêu đề */
+.product-teasers-instagram {
+    opacity: 0; /* Ban đầu ẩn */
+    transform: translateY(-100%); /* Đặt vị trí của phần tử xuống dưới */
+    transition: opacity 0.3s ease, transform 0.3s ease; /* Thêm hiệu ứng cho sự chuyển động */
+}
+
+/* Khi hover, icon và tiêu đề sẽ xuất hiện và nhảy lên */
+.col-sm-6.col-md-4.col-lg-2:hover .product-teasers-instagram {
+    opacity: 1;
+    transform: translateY(0); /* Đưa phần tử trở lại vị trí ban đầu */
+}
+
+/* Đảm bảo link không có gạch chân */
+.product-teasers-instagram a {
+    text-decoration: none;
+    color: black;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.contact-inf-payment {
+    width: 90%;
+    float: right;
+}
+.contact-inf-payment-title {
+    margin-top: 40px;
+    font-style: italic;
+    font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+    width: 100%;
+}
+
+.contact-inf-payment-content {
+    color: rgb(131, 123, 123);
+    width: 100%;
+}
+.creadit-card-icon {
+    width: 100%;
+}
+
+.quick-link {
+    justify-content: center;
+    align-items: center;
+}
+.quick-link-title {
+    display: flex;
+    justify-content: center;
+}
+.credit-card-icons {
+    display: flex;
+    justify-content: center; /* Căn giữa các thẻ */
+    align-items: center;
+    gap: 10px; /* Khoảng cách giữa các thẻ */
+    flex-wrap: wrap; /* Cho phép các thẻ xuống dòng nếu không đủ không gian */
+    padding: 10px;
+  }
+  
+  .credit-card-icon {
+    width: 70px; /* Kích thước thẻ vuông */
+    height: 70px; /* Chiều cao của thẻ vuông */
+    display: flex;
+    flex-direction: column; /* Sắp xếp hình ảnh và tên theo chiều dọc */
+    justify-content: center;
+    align-items: center;
+    background-color: #fff; /* Màu nền */
+    text-align: center; /* Căn giữa văn bản */
+  }
+  
+  .credit-card-icon img {
+    width: 70px; /* Kích thước hình ảnh */
+    height: 70px; /* Chiều cao hình ảnh */
+    object-fit: contain; /* Đảm bảo hình ảnh không bị méo */
+    margin-bottom: 6px; /* Khoảng cách giữa hình ảnh và tên */
+  }
+  
+  .credit-card-icon span {
+    font-size: 16px; /* Kích thước chữ */
+    font-weight: bold; /* Đặt chữ đậm */
+    color: #333; /* Màu chữ */
+  }
+
+  .newsletter-icons {
+    display: flex;
+    justify-content: center; /* Căn giữa các thẻ */
+    align-items: center;
+    gap: 5px; /* Khoảng cách giữa các thẻ */
+    flex-wrap: wrap; /* Cho phép các thẻ xuống dòng nếu không đủ không gian */
+    padding: 5px;
+  }
+  
+  .newsletter-icon {
+    width: 80px; /* Kích thước thẻ vuông */
+    height: 90px; /* Chiều cao của thẻ vuông */
+    display: flex;
+    flex-direction: column; /* Sắp xếp icon và tên theo chiều dọc */
+    justify-content: center;
+    align-items: center;
+    background-color: #fff; /* Màu nền */
+    text-align: center; /* Căn giữa văn bản */
+    padding: 10px;
+  }
+  
+  .newsletter-icon span {
+    font-size: 16px; /* Kích thước chữ */
+    font-weight: bold; /* Đặt chữ đậm */
+    color: #333; /* Màu chữ */
+    margin-top: 10px; /* Khoảng cách giữa icon và tên */
+  }
+
+  .newsletter-icon:hover {
+    cursor: pointer;
+  }
+  
+  .input-button-container {
+    transform: translateX(50%);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    width: 50%; /* Hoặc kích thước tùy ý */
+  }
+  
+  .input-field {
+    width: 100%;  /* Làm cho input chiếm toàn bộ chiều rộng */
+    padding: 10px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+  }
+  
+  .input-button {
+    position: absolute;
+    right: 0; /* Đặt nút vào góc phải của input */
+    top: 50%;
+    transform: translateY(-50%);
+    padding: 10px 15px;
+    font-size: 16px;
+    border: none;
+    background-color: #ca3939;
+    color: white;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  
+  .input-button:hover {
+    background-color: #0f190f;
+  }
+  
+
+
+  
+  

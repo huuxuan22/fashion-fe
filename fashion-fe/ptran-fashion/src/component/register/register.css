@@ -1,0 +1,86 @@
+.register {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    overflow: hidden;
+    position: relative;
+    width: 100%;
+    height: 100vh;
+    overflow-x: hidden; /* Ẩn thanh cuộn ngang */
+    overflow-y: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: rgba(0, 0, 0, 0.6);
+    
+    
+}
+
+
+
+.background-image-register {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* Đảm bảo ảnh không bị méo */
+    z-index: 1; /* Ảnh nền nằm dưới các nội dung khác */
+    filter: brightness(0.8);
+  }
+
+  .row {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .register > div {
+    position: relative;
+    z-index: 2; /* Nội dung hiển thị trên ảnh */
+    color: white; /* Đổi màu chữ để dễ đọc trên ảnh nền */
+    font-size: 1.5rem;
+    text-shadow: 0 2px 5px rgba(0, 0, 0, 0.7); /* Thêm hiệu ứng bóng chữ */
+    text-align: center;
+    padding: 30px;
+  }
+
+
+  .gender {
+    display: flex;
+    gap: 10px;
+    transform: translateX(20px);
+  }
+
+  .gender .category-gender {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+  }
+
+  .category-genderinput[type="radio"] {
+    transform: scale(3); /* Tăng kích thước radio */
+    margin-right: 8px; /* Khoảng cách giữa radio và text */
+  }
+
+  
+  .error-message {
+    width: 100%;
+    color: red;
+    font-size: 0.9rem;
+    margin-bottom: 20px;
+    text-align: left;
+  }
+  
+  .error-message p {
+    color: red;
+    margin: 0;
+    text-align: left;
+  }
+
+
+  .birthday p {
+    display: inline-block;
+    white-space: nowrap;
+  }

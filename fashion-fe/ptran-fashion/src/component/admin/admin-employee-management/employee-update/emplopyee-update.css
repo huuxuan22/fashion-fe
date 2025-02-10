@@ -1,0 +1,273 @@
+.employee-update {
+  height: 1200px;
+  width: 1100px;
+  margin: 0 auto;
+  padding: 0px;
+  background-color: #fff;
+  border-radius: 8px;
+}
+
+.background-image-register {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: -1;
+  filter: brightness(0.8);
+  border-radius: 8px;
+}
+
+.row {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+}
+
+input[type="text"], input[type="date"], input[type="radio"] {
+  width: 100%;
+  padding: 10px;
+  border-radius: 5px;
+  border: 1px solid #ddd;
+  font-size: 1rem;
+  color: #333;
+}
+
+input[type="radio"] {
+  width: auto;
+}
+
+input[type="text"]:focus, input[type="date"]:focus {
+  border-color: #007bff;
+  outline: none;
+}
+.error-message {
+  color: red;
+  font-size: 0.9rem;
+  margin-top: 5px;
+  text-align: left;
+}
+
+button[type="submit"] {
+  padding: 12px 20px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 1.1rem;
+  transition: background-color 0.3s ease;
+}
+
+button[type="submit"]:hover {
+  background-color: #0056b3;
+}
+
+button[type="submit"]:active {
+  background-color: #004085;
+}
+
+input[type="text"]:disabled,
+input[type="date"]:disabled {
+  background-color: #f4f4f4;
+  cursor: not-allowed;
+}
+
+label {
+  font-weight: bold;
+  margin-bottom: 5px;
+}
+
+input[type="text"] {
+  background-color: #f9f9f9;
+}
+
+input[type="text"]::placeholder {
+  color: #ccc;
+}
+
+input[type="text"]:focus::placeholder {
+  color: #007bff;
+}
+
+.row {
+  margin-bottom: 20px;
+}
+
+/* Căn chỉnh label và input sao cho chúng dễ nhìn */
+.row label {
+  font-weight: bold;
+  display: block;
+  margin-bottom: 5px;
+  color: #333;
+}
+
+/* Kiểu cho input */
+.row input[type="text"] {
+  width: 100%;
+  padding: 10px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  font-size: 1rem;
+  transition: border-color 0.3s;
+}
+
+/* Thêm hiệu ứng hover khi focus vào input */
+.row input[type="text"]:focus {
+  border-color: #007bff;
+  outline: none;
+}
+
+/* Kiểu cho cột trên các màn hình lớn */
+.col-lg-3 {
+  padding: 10px;
+}
+
+/* Kiểu cho cột trên các màn hình nhỏ (mobile) */
+@media (max-width: 768px) {
+  .col-sm-12 {
+    padding: 10px;
+  }
+}
+
+/* Kiểu dáng cho label */
+.radio-group {
+  display: flex;
+  gap: 20px;
+  align-items: center;
+}
+
+.radio-item {
+  display: flex;
+  align-items: center;
+}
+
+.radio-item input {
+  margin-right: 8px;
+}
+
+.radio-group label {
+  font-size: 1rem;
+  color: #333;
+}
+
+.radio-item input[type="radio"]:checked + label {
+  font-weight: bold;
+  color: #007bff;
+}
+
+/* Kiểu cho cột trên các màn hình lớn */
+.col-lg-3 {
+  padding: 10px;
+}
+
+/* Kiểu cho cột trên các màn hình nhỏ (mobile) */
+@media (max-width: 768px) {
+  .col-sm-12 {
+    padding: 10px;
+  }
+}
+
+/* Kiểu dáng cho label */
+.row label {
+  font-weight: bold;
+  display: block;
+  margin-bottom: 5px;
+  color: #333;
+}
+
+/* Kiểu dáng cho select */
+.row select {
+  width: 100%;
+  padding: 10px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  font-size: 1rem;
+  transition: border-color 0.3s;
+}
+
+/* Hiệu ứng khi select được focus */
+.row select:focus {
+  border-color: #007bff;
+  outline: none;
+}
+
+/* Kiểu cho cột trên các màn hình lớn */
+.col-lg-6 {
+  padding: 10px;
+}
+
+/* Kiểu cho cột trên các màn hình nhỏ (mobile) */
+@media (max-width: 768px) {
+  .col-sm-12 {
+    padding: 10px;
+  }
+}
+
+
+.avatar-container {
+  text-align: center;
+  margin-top: 20px;
+}
+
+.avatar-image {
+  width: 250px;
+  height: 250px;
+  border-radius: 50%;
+  overflow: hidden;
+  margin: 0 auto;
+  border: 2px solid #ccc;
+}
+
+.avatar-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.avatar-button {
+  display: inline-block;
+  margin-top: 10px;
+  background-color: #007bff;
+  color: white;
+  padding: 5px 10px;
+  border-radius: 5px;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.avatar-input {
+  display: none;
+}
+
+
+
+
+
+.btn-comback {
+  display: inline-flex;
+  align-items: center;
+  background-color: #007bff; /* Màu nền */
+  color: white; /* Màu chữ */
+  padding: 10px 20px; /* Khoảng cách nội dung */
+  border: none; /* Bỏ border */
+  border-radius: 5px; /* Bo tròn góc */
+  font-size: 16px; /* Kích thước chữ */
+  cursor: pointer; /* Con trỏ chuột thay đổi khi hover */
+  transition: all 0.3s ease; /* Hiệu ứng chuyển động */
+}
+
+.btn-comback:hover {
+  background-color: #0056b3; /* Màu nền khi hover */
+  transform: scale(1.05); /* Phóng to nút một chút */
+}
+
+.btn-comback:focus {
+  outline: none; /* Bỏ outline khi nút được chọn */
+}
+
+.btn-comback svg {
+  margin-right: 8px; /* Khoảng cách giữa icon và chữ */
+}
+
