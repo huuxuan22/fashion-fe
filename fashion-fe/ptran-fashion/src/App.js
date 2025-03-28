@@ -1,66 +1,57 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
-import NewProductHeader from "./component/new-product-homepage/new-product";
 import "swiper/css"; // Cách import mới cho CSS
-import NavbarHeader from "./component/navbar-header/navbar-header";
-import FeatureContent from "./component/feature-content/feature-content";
-import Footer from "./component/footer/footer";
-import SelectOptionOrder from "./component/order-product/select-option-categories/select-categories";
 import "@fontsource/roboto";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap/dist/js/bootstrap.bundle.min.js";
 import "@fontsource/inter";
-import CheckBoxSizeColor from "./component/order-product/checkbox-size-color/checkbox-size-color";
-import OrderProduct from "./component/order-product/order-product/order-product";
-import CardProduct from "./component/card-product/card-product";
-import ShoppingCart from "./component/order-product/shopping-cart/shopping-cart";
-import PurchasedProduct from "./component/order-product/shopping-cart/purchased-products/purchased-products";
-import Login from "./component/login/login";
-import Register from "./component/register/register";
-import ChangePassword from "./component/change-password/change-password";
-import VerifyCode from "./component/verify-code/verify-code";
-import EnterEmailVerify from "./component/enter-email-verify/enter-email-verify";
-import DoashbarAmin from "./component/doashbar-admin/doashbar-admin";
-import EmployeeManagemenet from "./component/admin/admin-employee-management/employee-management/employee-management";
+import Login from "./../src/pages/login/login.jsx";
+import Register from "./pages/register/register.jsx";
+import ChangePassword from "./pages/change-password/change-password.jsx";
+import VerifyCode from "./pages/verify-code/verify-code.jsx";
+import EnterEmailVerify from "./pages/enter-email-verify/enter-email-verify.jsx";
 import "bootstrap/dist/css/bootstrap.min.css";
-import UserProfile from "./component/admin/admin-employee-management/employee-details/employee-details";
-import EmployeeUpdate from "./component/admin/admin-employee-management/employee-update/employee-update";
-import EmployeeAdd from "./component/admin/admin-employee-management/employee-add/employee-add";
-import UploadImage from "./share/upload-image/UploadImage";
-
+import Header from "./layout/Header.jsx";
+import DealsSection from "./component/DealsSection.jsx";
+import ShopByCategory from "./component/ShopByCategory.jsx";
+import FashionGallery from "./component/FashionGallery.jsx";
+import ProductCategory from "./component/ProductCategory.jsx";
+import Sidebar from "./component/Sidebar.jsx";
+import ClothingCard from "./component/ClothingCard.jsx";
+import Footer from "./layout/Footer.jsx";
+import { Box } from "@mui/material";
+import HomePage from "./layout/HomePage.jsx";
+import ShoppingCart from "./component/cart/ShoppingCart.jsx";
+import { useState } from "react";
+import CategoryDropdown from "./features/CategoryDropdown.jsx";
+import ProductPage from "./pages/ProductPage.jsx";
 function App() {
+  const [showFooter, setShowFooter] = useState(true); 
   return (
-    <BrowserRouter>
-      <Routes>
-        <Route path="/new-product-header" element={<NewProductHeader />} />
-        <Route path="/slider" element={<NavbarHeader />} />
-        <Route path="/sections-content" element={<FeatureContent />} />
-        <Route path="/footer" element={<Footer />} />
-        <Route path="/order" element={<SelectOptionOrder />} />
-        <Route path="/checkbox-size-color" element={<CheckBoxSizeColor />} />
-        <Route path="/order-product" element={<OrderProduct />} />
-        <Route path="/card-product" element={<CardProduct />} />
-        <Route path="/shopping-cart" element={<ShoppingCart />} />
-        <Route path="/purchased-product" element={<PurchasedProduct />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
-        <Route path="/change-password" element={<ChangePassword />} />
-        <Route path="/verify-code" element={<VerifyCode />} />
-        <Route path="/enter-email-verify" element={<EnterEmailVerify />} />
+    
+      <BrowserRouter>
 
-        {/* Sidebar bên trái */}
-        <Route path="/employee" element={<EmployeeManagemenet />} />
-
-        {/* Nội dung bên phải */}
-        <Route path="/admin" element={<DoashbarAmin />}>
-          <Route path="employee" element={<EmployeeManagemenet />} />
-          <Route path="employee-infor" element={<UserProfile />} />
-          <Route path="employee-update" element={<EmployeeUpdate />} />
-          <Route path="employee-add" element={<EmployeeAdd />} />
-          <Route path="upload-image" element={<UploadImage/>}></Route>
-          {/* <Route path="absence" element={<AbsenceRequest />} /> */}
-        </Route>
-      </Routes>
-    </BrowserRouter>
+        <Box component="main" sx={{ flex: 1 }}>
+          <Routes>
+          <Route path="/login" element={<Login />} />
+          <Route path="/product-page" element={<ProductPage />} />
+          <Route path="/drowdown" element={<CategoryDropdown />} />
+          <Route path="/shopping-cart" element={<ShoppingCart />} />
+            <Route path="/deal" element={<DealsSection />} />
+            <Route path="/shop-by-cate" element={<ShopByCategory />} />
+            <Route path="/footer" element={<Footer />} />
+            <Route path="/clothing-card" element={<ClothingCard/>} />
+            <Route path="/product-category" element={<ProductCategory />} />
+            <Route path="/sidebar" element={<Sidebar />} />
+            <Route path="/gallery" element={<FashionGallery />} />
+            <Route path="/homepage" element={<HomePage />}></Route>
+            <Route path="/header" element={<Header />} />
+            <Route path="/register" element={<Register />} />
+            <Route path="/change-password" element={<ChangePassword />} />
+            <Route path="/verify-code" element={<VerifyCode />} />
+            <Route path="/enter-email-verify" element={<EnterEmailVerify />} />
+          </Routes>
+        </Box>
+      </BrowserRouter>
   );
 }
 
