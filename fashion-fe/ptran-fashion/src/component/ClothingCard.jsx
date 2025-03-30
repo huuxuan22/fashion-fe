@@ -22,18 +22,18 @@ export default function ClothingCard({product}) {
       <CardMedia
         component="img"
         height="200"
-        image={product.imageUrl}
-        alt={product.name}
+        image={product?.imageUrl}
+        alt={product?.name}
       />
       <CardContent>
         <Typography gutterBottom variant="h6" component="div">
-          {product.brand}
+          {product?.brand}
         </Typography>
         <Typography variant="body2" color="text.secondary">
-          {product.name}
+          {product?.name}
         </Typography>
         <Typography variant="h6" sx={{ mt: 1 }}>
-          {product.price}
+          {product?.price}
         </Typography>
         <Box sx={{ display: 'flex', alignItems: 'center', mt: 1 }}>
           <StarIcon color="primary" fontSize="small" />
@@ -42,7 +42,7 @@ export default function ClothingCard({product}) {
           <StarIcon color="primary" fontSize="small" />
           <StarIcon color="primary" fontSize="small" />
           <Typography variant="caption" sx={{ ml: 1 }}>
-            {product.ratingCount}
+            {product?.ratingCount}
           </Typography>
         </Box>
       </CardContent>

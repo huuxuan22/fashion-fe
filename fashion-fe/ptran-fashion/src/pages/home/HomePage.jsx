@@ -1,10 +1,10 @@
 import React, { useState } from "react";
-import ShopByCategory from "../component/ShopByCategory";
-import ProductCategory from "../component/ProductCategory";
-import DealsSection from "../component/DealsSection";
-import Footer from "./Footer";
-import Header from "./Header";
 import { Box } from "@mui/material";
+import Header from "../../layout/Header";
+import ProductCategory from "../../component/ProductCategory";
+import ShopByCategory from "../../component/ShopByCategory";
+import DealsSection from "../../component/DealsSection";
+import Footer from "../../layout/Footer";
 
 const HomePage = () => {
     const [showFooter, setShowFooter] = useState(true);
