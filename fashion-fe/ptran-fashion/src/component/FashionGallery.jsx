@@ -12,22 +12,24 @@ const imageData = [
 
 const FashionGallery = () => {
   return (
-    <div className="w-full max-w-6xl mx-auto py-6">
-      <Grid container spacing={2}>
-        {imageData.map((item) => (
-          <Grid item xs={12} sm={item.cols === 2 ? 6 : 3} key={item.id}>
-            <Card className="shadow-md rounded-lg overflow-hidden">
-              <CardMedia
-                component="img"
-                height="100%"
-                image={item.src}
-                alt={`Fashion ${item.id}`}
-                className="object-cover"
-              />
-            </Card>
-          </Grid>
-        ))}
-      </Grid>
+    <div style={{ padding: "0 100px" }}> {/* Add 100px padding on both sides */}
+      <div className="w-full max-w-6xl mx-auto py-6">
+        <Grid container spacing={2}>
+          {imageData.map((item) => (
+            <Grid item xs={12} sm={item.cols === 2 ? 6 : 3} key={item.id}>
+              <Card className="shadow-md rounded-lg overflow-hidden">
+                <CardMedia
+                  component="img"
+                  height="100%"
+                  image={item.src}
+                  alt={`Fashion ${item.id}`}
+                  className="object-cover"
+                />
+              </Card>
+            </Grid>
+          ))}
+        </Grid>
+      </div>
     </div>
   );
 };

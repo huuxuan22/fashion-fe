@@ -12,8 +12,10 @@ import {
 } from "@mui/material";
 import { Search, FavoriteBorder, ShoppingCart } from "@mui/icons-material";
 import CategoryDropdown from "../features/CategoryDropdown";
+import { useNavigate } from "react-router-dom";
 
 const Header = () => {
+  const navigate = useNavigate();
   const [anchorEl, setAnchorEl] = useState(null);
   const [activeCategory, setActiveCategory] = useState(null);
 
@@ -28,7 +30,19 @@ const Header = () => {
   };
 
   const open = Boolean(anchorEl);
-
+  const handleClickShoppingCart = () => {
+      navigate("/shopping-cart")
+  }
+  const handleHomepage = () => {
+    console.log("Nó đã đi vào đây");
+    navigate("/")
+  } 
+  const handleSearch = () => {
+    navigate("/search")
+  }
+  const handleProfile = () => {
+    navigate("/profile")
+  }
   return (
     <>
       <AppBar
@@ -40,12 +54,14 @@ const Header = () => {
             display: "flex",
             justifyContent: "space-between",
             alignItems: "center",
+            
           }}
         >
           {/* Logo */}
           <Typography
             variant="h6"
-            sx={{ fontFamily: "cursive", color: "#388e3c" }}
+            sx={{ fontFamily: "cursive", color: "#388e3c",cursor: 'pointer' }}
+            onClick = {() => handleHomepage()}
           >
             Zosh Bazaar
           </Typography>
@@ -84,12 +100,12 @@ const Header = () => {
 
           {/* Search & Icons */}
           <Box sx={{ display: "flex", alignItems: "center", gap: "15px" }}>
-            <IconButton>
+            <IconButton onClick={() => handleSearch()}>
               <Search />
             </IconButton>
 
             {/* User Avatar */}
-            <Box sx={{ display: "flex", alignItems: "center", gap: "5px" }}>
+            <Box sx={{ display: "flex", alignItems: "center", gap: "5px", cursor: 'pointer' }} onClick = {() => handleProfile()}>
               <Avatar
                 src="/path-to-avatar.jpg"
                 sx={{ width: 30, height: 30 }}
@@ -105,7 +121,7 @@ const Header = () => {
             </IconButton>
 
             {/* Cart with Badge */}
-            <IconButton>
+            <IconButton onClick={() => handleClickShoppingCart()}>
               <Badge badgeContent={1} color="success">
                 <ShoppingCart />
               </Badge>

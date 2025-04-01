@@ -53,7 +53,7 @@ const ShopByCategory = () => {
         padding: "24px 0",
       }}
     >
-      <Grid container spacing={4}>
+      <Grid container spacing={7}>
         {imageData.map((item) => (
           <Grid item xs={12} sm={2.4} key={item.id}>
             <Card
