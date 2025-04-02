@@ -12,7 +12,7 @@ import {
 } from "@fortawesome/free-brands-svg-icons";
 import { faZalo } from "@fortawesome/free-brands-svg-icons";
 import { Link } from "react-router-dom";
-
+import * as loginService from "./../../service/login-service"
 const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
 
@@ -28,15 +28,30 @@ const Login = () => {
 
   const {
     register,
+    setError,
     handleSubmit,
     formState: { errors },
   } = useForm({
     resolver: yupResolver(validationSchema),
   });
 
-  const onSubmit = (data) => {
-    console.log("Thông tin đăng nhập:", data);
-    alert("Đăng nhập thành công!");
+  const onSubmit =async (data) => {
+    await loginService.login(data).then((data) => {
+      if (data.data.username) {
+        setError("username", {
+          type: "manual",
+          message: data.data.username, // Gán thông báo lỗi từ API
+        });
+      } else if (data.data.password) {
+        setError("password", {
+          type: "manual",
+          message: data.data.password, // Gán thông báo lỗi từ API
+        });
+      } else {
+        localStorage.setItem()
+      }
+
+    })
   };
 
   const togglePasswordVisibility = () => {

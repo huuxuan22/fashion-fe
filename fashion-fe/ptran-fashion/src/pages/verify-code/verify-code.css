@@ -152,5 +152,81 @@
     color: #0056b3; /* Đổi màu khi hover */
     text-decoration: underline; /* Thêm gạch dưới khi hover */
   }
+
+  .error-message {
+    color: #ff0000;
+    background-color: #fff0f0;
+    padding: 10px;
+    border-radius: 5px;
+    margin: 15px 0;
+    text-align: center;
+    border: 1px solid #ff0000;
+    font-weight: bold;
+    animation: shake 0.5s;
+  }
+  
+  @keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+    20%, 40%, 60%, 80% { transform: translateX(5px); }
+  }
+  
+  .verify-input.error {
+    border-color: #ff0000 !important;
+    background-color: #fff0f0 !important;
+    animation: pulse 0.5s;
+  }
+  
+  @keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+  }
+  .error-message {
+    color: #ff0000;
+    background-color: #fff0f0;
+    padding: 10px;
+    border-radius: 5px;
+    margin: 15px 0;
+    text-align: center;
+    border: 1px solid #ff0000;
+    font-weight: bold;
+    animation: shake 0.5s;
+  }
+  
+  .success-message {
+    color: #00917b;
+    background-color: #e6f7f0;
+    padding: 10px;
+    border-radius: 5px;
+    margin: 15px 0;
+    text-align: center;
+    border: 1px solid #00917b;
+    font-weight: bold;
+    animation: fadeIn 0.5s;
+  }
+  
+  @keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+    20%, 40%, 60%, 80% { transform: translateX(5px); }
+  }
+  
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+  
+  .action-other {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+  }
+  
+  .action-link {
+    text-decoration: none;
+    font-weight: bold;
+    cursor: pointer;
+  }
   
   
