@@ -1,0 +1,2 @@
+export const GET_ALL_PRODUCT = "GET_ALL_PRODUCT";
+export const GET_PRODUCT_BY_ID = "GET_PRODUCT_BY_ID";

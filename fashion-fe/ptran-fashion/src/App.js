@@ -34,6 +34,7 @@ import SellerTable from "./features/SellerTable.jsx";
 import OrderManagement from "./component/OrderManagement.jsx";
 import CreateCoupon from "./component/CreateCoupon.jsx";
 import Transaction from "./component/Transaction.jsx";
+import ProductComment from "./features/ProductComment.jsx";
 function App() {
   const [showFooter, setShowFooter] = useState(true);
   return (
@@ -46,7 +47,7 @@ function App() {
           <Route path="/shopping-cart" element={<ShoppingCart />} />
           <Route path="/search" element={<Search />} />
           <Route path="/profile" element={<UserProfile />} />
-
+          <Route path="/comment" element={<ProductComment/>}></Route>
           
           <Route path="/product-detail" element={<ProductDetail />} />
           <Route path="/product-page" element={<ProductPage />} />

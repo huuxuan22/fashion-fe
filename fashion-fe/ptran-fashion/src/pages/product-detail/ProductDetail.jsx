@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import {
   Box,
   Typography,
@@ -18,7 +18,9 @@ import FlashOnIcon from "@mui/icons-material/FlashOn";
 import ProductDescription from "../../features/ProductDescription";
 import ProductComment from "../../features/ProductComment";
 import SimilarProducts from "../../features/SimilarProduct";
-
+import { useLocation } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import * as userService from "./../../redux/User/Action"
 const ProductDetail = () => {
   // Mock data for similar products
   const similarProducts = [
@@ -51,7 +53,22 @@ const ProductDetail = () => {
         "https://th.bing.com/th/id/OIP.1rUDwW_ClEPEbaO9S6ymygHaHa?w=1000&h=1000&rs=1&pid=ImgDetMain",
     },
   ];
+  const {users} = useSelector((store) => store);
+  const dispatch = useDispatch();
+  const token = localStorage.getItem("token");
 
+  useEffect(() => {
+    const fetchUser =async () => {
+      await dispatch(userService.currentUser(token));
+    }
+    if (token) {
+      fetchUser();
+    }
+  },[token,dispatch]); 
+  const location = useLocation();
+  const { productId } = location.state || {};
+  
+  
   return (
     <div>
       <Box
@@ -268,7 +285,7 @@ const ProductDetail = () => {
         </Grid>
       </Box>
       <ProductDescription />
-      <ProductComment />
+      <ProductComment  productId={productId} currentUser= {users?.currentUser}/>
       <SimilarProducts />
     </div>
   );

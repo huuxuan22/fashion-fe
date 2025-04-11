@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Box,
   Typography,
@@ -13,7 +13,8 @@ import {
   styled
 } from '@mui/material';
 import { ChevronLeft, ChevronRight } from '@mui/icons-material';
-
+import * as productService from "./../service/product-service"
+import { useNavigate } from 'react-router-dom';
 // Styled components
 const LuxuryNotificationCard = styled(Paper)({
   padding: '40px',
@@ -37,7 +38,6 @@ const LuxuryNotificationCard = styled(Paper)({
     backgroundColor: '#000',
   }
 });
-
 const LuxuryTitle = styled(Typography)({
   fontFamily: '"Playfair Display", serif',
   fontSize: '2.5rem',
@@ -47,7 +47,6 @@ const LuxuryTitle = styled(Typography)({
   marginBottom: '8px',
   textTransform: 'uppercase'
 });
-
 const LuxurySubtitle = styled(Typography)({
   fontFamily: '"Playfair Display", serif',
   fontSize: '1.8rem',
@@ -57,7 +56,6 @@ const LuxurySubtitle = styled(Typography)({
   marginBottom: '24px',
   textTransform: 'uppercase'
 });
-
 const LuxuryText = styled(Typography)({
   fontFamily: '"Cormorant Garamond", serif',
   fontSize: '1.1rem',
@@ -67,7 +65,6 @@ const LuxuryText = styled(Typography)({
   maxWidth: '600px',
   marginBottom: '32px'
 });
-
 const PromotionCard = styled(Card)({
   borderRadius: 12,
   overflow: 'hidden',
@@ -84,7 +81,6 @@ const PromotionCard = styled(Card)({
     background: 'linear-gradient(to bottom, rgba(0,145,123,0.3) 0%, rgba(0,145,123,0.7) 100%)',
   }
 });
-
 const ProductCard = styled(Card)({
   borderRadius: 12,
   overflow: 'hidden',
@@ -97,7 +93,6 @@ const ProductCard = styled(Card)({
     transform: 'translateY(-5px)',
   }
 });
-
 // Mock data
 const luxuryNotifications = [
   { 
@@ -119,30 +114,37 @@ const luxuryNotifications = [
     text: "Experience the finest fabrics and attention to detail in every stitch of our premium collection."
   },
 ];
-
 const promotions = [
   { id: 1, title: 'Giảm giá 50%', subtitle: 'Cho tất cả sản phẩm', image: 'https://th.bing.com/th/id/R.b05879ccadc3950bb58057c31db48dc2?rik=iImeoSeL2XOvXg&pid=ImgRaw&r=0' },
   { id: 2, title: 'Mua 1 tặng 1', subtitle: 'Áp dụng cuối tuần', image: 'https://th.bing.com/th/id/OIP.WlwO_bSMc__IyRg-LAXDsAHaHa?w=590&h=590&rs=1&pid=ImgDetMain' },
   { id: 3, title: 'Freeship', subtitle: 'Đơn hàng từ 500K', image: 'https://static.vecteezy.com/system/resources/previews/003/206/008/non_2x/social-media-banner-template-free-vector.jpg' },
 ];
-
 const topProducts = [
   { id: 1, name: 'Kem dưỡng da', price: '250,000đ', salePrice: '175,000đ', image: 'https://th.bing.com/th/id/OIP.L5zJbR9VCIYxo1blZUIQBQHaLG?rs=1&pid=ImgDetMain' },
   { id: 2, name: 'Serum vitamin C', price: '350,000đ', salePrice: '245,000đ', image: 'https://vanessa.vn/upload/files/THANG-4-2023/dam-cong-chua-FA-4-2023-226.jpg' },
   { id: 3, name: 'Mặt nạ collagen', price: '120,000đ', salePrice: '84,000đ', image: 'https://th.bing.com/th/id/OIP.qI6s8grcnGehMPM8lhl2EgHaHz?w=720&h=758&rs=1&pid=ImgDetMain' },
 ];
-
 const DashboardLayout = () => {
   const [currentNotification, setCurrentNotification] = useState(0);
-
+  const [topProduct, setTopProduct] = useState([]);
+  const token = localStorage.getItem("token");
+  const navigate = useNavigate();
   const handleNext = () => {
     setCurrentNotification((prev) => (prev + 1) % luxuryNotifications.length);
   };
-
   const handlePrev = () => {
     setCurrentNotification((prev) => (prev - 1 + luxuryNotifications.length) % luxuryNotifications.length);
   };
-
+  const loadTopPorduct = async () => {
+    await productService.getDiscountProduct({token: token}).then((data) => {
+      setTopProduct(data.data);
+    });
+  };
+  useEffect(() => {
+    loadTopPorduct();
+  },[]);
+  console.log("Top sản phẩm giảm giá",topProduct);
+  
   return (
     <Box sx={{ p: 3, maxWidth: 1200, margin: '0 auto' }}>
       <Grid container spacing={3}>
@@ -249,14 +251,14 @@ const DashboardLayout = () => {
           <Divider sx={{ mb: 3 }} />
           
           <Grid container spacing={3}>
-            {topProducts.map((product) => (
-              <Grid item xs={12} sm={4} key={product.id}>
-                <ProductCard>
+            {topProduct?.map((product) => (
+              <Grid item xs={12} sm={4} key={product.productId} onClick={() => navigate("/product-detail" , { state: { productId: product.productId } })}>
+                <ProductCard sx={{cursor: 'pointer'}}>
                   <CardMedia
                     component="img"
                     height="280"
-                    image={product.image}
-                    alt={product.name}
+                    image={"http://localhost:8080/image/product/" +product.thumbnail}
+                    alt={product.productName}
                     sx={{ 
                       objectFit: 'contain',
                       p: 2
@@ -264,7 +266,7 @@ const DashboardLayout = () => {
                   />
                   <CardContent sx={{ flexGrow: 1 }}>
                     <Typography gutterBottom variant="h5" component="div" sx={{ fontWeight: 'bold' }}>
-                      {product.name}
+                      {product.productName}
                     </Typography>
                     <Box sx={{ 
                       display: 'flex', 
@@ -280,7 +282,7 @@ const DashboardLayout = () => {
                         {product.price}
                       </Typography>
                       <Typography variant="h5" color="#00917b" fontWeight="bold">
-                        {product.salePrice}
+                        {product.sellPrice}
                       </Typography>
                       <Chip 
                         label="SALE" 

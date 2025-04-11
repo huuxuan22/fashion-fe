@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   AppBar,
   Toolbar,
@@ -13,15 +13,35 @@ import {
 import { Search, FavoriteBorder, ShoppingCart } from "@mui/icons-material";
 import CategoryDropdown from "../features/CategoryDropdown";
 import { useNavigate } from "react-router-dom";
+import ShoppingBasketIcon from "@mui/icons-material/ShoppingBasket";
+import InfoIcon from "@mui/icons-material/Info";
+import ContactMailIcon from "@mui/icons-material/ContactMail";
+import SearchIcon from "@mui/icons-material/Search";
+import { FaTruck } from "react-icons/fa";
+import * as categoryService from "./../service/category-service";
+
 
 const Header = () => {
   const navigate = useNavigate();
   const [anchorEl, setAnchorEl] = useState(null);
   const [activeCategory, setActiveCategory] = useState(null);
-
+  const [categories,setCategories] = useState([]);
+  const token = localStorage.getItem("token");
+  const loadCategories =async () => {
+    await categoryService.getAllCategory(token).then((data) => {
+      setCategories(data.data);
+    })
+  };
+  useEffect(() => {
+    loadCategories();
+  },[]);
+  console.log("tôi đang ở header và danh sách categories: ", categories);
+  
   const handleCategoryEnter = (category, event) => {
-    setActiveCategory(category);
-    setAnchorEl(event.currentTarget);
+    if (category === "Product") {
+      setActiveCategory(category);
+      setAnchorEl(event.currentTarget);
+    }
   };
 
   const handleClose = () => {
@@ -31,18 +51,18 @@ const Header = () => {
 
   const open = Boolean(anchorEl);
   const handleClickShoppingCart = () => {
-      navigate("/shopping-cart")
-  }
+    navigate("/shopping-cart");
+  };
   const handleHomepage = () => {
     console.log("Nó đã đi vào đây");
-    navigate("/")
-  } 
+    navigate("/");
+  };
   const handleSearch = () => {
-    navigate("/search")
-  }
+    navigate("/search");
+  };
   const handleProfile = () => {
-    navigate("/profile")
-  }
+    navigate("/profile");
+  };
   return (
     <>
       <AppBar
@@ -54,14 +74,13 @@ const Header = () => {
             display: "flex",
             justifyContent: "space-between",
             alignItems: "center",
-            
           }}
         >
           {/* Logo */}
           <Typography
             variant="h6"
-            sx={{ fontFamily: "cursive", color: "#388e3c",cursor: 'pointer' }}
-            onClick = {() => handleHomepage()}
+            sx={{ fontFamily: "cursive", color: "#388e3c", cursor: "pointer" }}
+            onClick={() => handleHomepage()}
           >
             Zosh Bazaar
           </Typography>
@@ -75,27 +94,100 @@ const Header = () => {
               justifyContent: "center",
             }}
           >
-            {["Men", "Women", "Children", "Electronics"].map((item) => (
-              <Button
-                key={item}
-                sx={{
-                  cursor: "pointer",
-                  color: activeCategory === item ? "#388e3c" : "#333",
-                  textTransform: "none",
-                  fontWeight: activeCategory === item ? "bold" : "normal",
-                  fontSize: "16px", // Chữ to hơn
-                  fontFamily: "Arial, sans-serif", // Font mặc định (thay đổi font tại đây)
-                  "&:hover": {
-                    color: "#388e3c", // Thay đổi màu khi hover
-                    fontFamily: "Times New Roman, serif", // Thay đổi font khi hover
-                    fontSize: "18px", // Kích thước chữ lớn hơn khi hover
-                  },
-                }}
-                onMouseEnter={(e) => handleCategoryEnter(item, e)}
-              >
-                {item}
-              </Button>
-            ))}
+            {/* 1. Product Button */}
+            <Button
+              startIcon={<ShoppingBasketIcon />}
+              sx={{
+                cursor: "pointer",
+                color: "#008772",
+                textTransform: "none",
+                fontWeight: activeCategory === "Product" ? "bold" : "normal",
+                fontSize: "16px",
+                fontFamily: "Arial, sans-serif",
+                "&:hover": {
+                  textDecoration: "underline", // Gạch chân khi hover
+                  textUnderlineOffset: "4px", // Điều chỉnh vị trí gạch chân
+                  fontSize: "18px",
+                  backgroundColor: "transparent", // Loại bỏ màu nền
+                  "& .MuiSvgIcon-root": { transform: "scale(1.1)" },
+                },
+                transition: "all 0.3s ease",
+              }}
+              onMouseEnter={(e) => handleCategoryEnter("Product", e)}
+            >
+              Product
+            </Button>
+
+            {/* 2. Introduction Button */}
+            <Button
+              startIcon={<InfoIcon />}
+              sx={{
+                cursor: "pointer",
+                color: "#008772",
+                textTransform: "none",
+                fontWeight:
+                  activeCategory === "Introduction" ? "bold" : "normal",
+                fontSize: "16px",
+                fontFamily: "Arial, sans-serif",
+                "&:hover": {
+                  textDecoration: "underline",
+                  textUnderlineOffset: "4px",
+                  fontSize: "18px",
+                  backgroundColor: "transparent",
+                  "& .MuiSvgIcon-root": { transform: "scale(1.1)" },
+                },
+                transition: "all 0.3s ease",
+              }}
+            >
+              Introduction
+            </Button>
+
+            {/* 3. Contact Button */}
+            <Button
+              startIcon={<ContactMailIcon />}
+              sx={{
+                cursor: "pointer",
+                color: "#008772",
+                textTransform: "none",
+                fontWeight: activeCategory === "Contact" ? "bold" : "normal",
+                fontSize: "16px",
+                fontFamily: "Arial, sans-serif",
+                "&:hover": {
+                  textDecoration: "underline",
+                  textUnderlineOffset: "4px",
+                  fontSize: "18px",
+                  backgroundColor: "transparent",
+                  "& .MuiSvgIcon-root": { transform: "scale(1.1)" },
+                },
+                transition: "all 0.3s ease",
+              }}
+            >
+              Contact
+            </Button>
+
+            {/* 4. Order Lookup Button */}
+            <Button
+              startIcon={<FaTruck />} // Đã thay bằng icon từ MUI
+              sx={{
+                cursor: "pointer",
+                color: "#008772",
+                textTransform: "none",
+                fontWeight:
+                  activeCategory === "Order Lookup" ? "bold" : "normal",
+                fontSize: "16px",
+                fontFamily: "Arial, sans-serif",
+                "&:hover": {
+                  textDecoration: "underline",
+                  textUnderlineOffset: "4px",
+                  fontSize: "18px",
+                  backgroundColor: "transparent",
+                  "& .MuiSvgIcon-root": { transform: "scale(1.1)" },
+                },
+                transition: "all 0.3s ease",
+              }}
+            >
+              Order Lookup
+            </Button>
           </Box>
 
           {/* Search & Icons */}
@@ -105,7 +197,15 @@ const Header = () => {
             </IconButton>
 
             {/* User Avatar */}
-            <Box sx={{ display: "flex", alignItems: "center", gap: "5px", cursor: 'pointer' }} onClick = {() => handleProfile()}>
+            <Box
+              sx={{
+                display: "flex",
+                alignItems: "center",
+                gap: "5px",
+                cursor: "pointer",
+              }}
+              onClick={() => handleProfile()}
+            >
               <Avatar
                 src="/path-to-avatar.jpg"
                 sx={{ width: 30, height: 30 }}
@@ -152,20 +252,20 @@ const Header = () => {
         }}
         sx={{
           mt: 1,
-          width: "100%",
-          maxWidth: "lg",
-          mx: "auto",
+          pointerEvents: "none", // Cho phép hover tiếp tục khi di chuyển đến popover
         }}
         PaperProps={{
           sx: {
+            pointerEvents: "auto", // Bật lại events khi ở trong popover
             width: "100%",
             maxWidth: "lg",
             borderRadius: 0,
             boxShadow: 3,
           },
         }}
+        onMouseLeave={handleClose}
       >
-        <CategoryDropdown onClose={handleClose} />
+        <CategoryDropdown categories={categories} onClose={handleClose} />
       </Popover>
     </>
   );

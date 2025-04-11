@@ -48,12 +48,12 @@ const Login = () => {
           message: data.data.password, // Gán thông báo lỗi từ API
         });
       } else {
-        localStorage.setItem()
+        localStorage.setItem("token",data.data)
       }
 
     })
   };
-
+  
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
   };
