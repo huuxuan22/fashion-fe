@@ -22,73 +22,62 @@ import {
   Reply,
   KeyboardArrowDown,
   KeyboardArrowUp,
+  Videocam,
+  Star,
 } from "@mui/icons-material";
 import { useTypingIndicator } from "../hooks/useTypingIndicator";
 import { useWebSocket } from "../hooks/useWebSocket";
+import * as feedbackServiceMain from "./../service/feedbacks-service";
+import { format, set } from "date-fns";
+import * as feedbackService from "./../redux/Feedback/Action";
+import { useDispatch, useSelector } from "react-redux";
+import { store } from "./../redux/store";
+import { BASE_API_URL } from "../config/Config";
+import ReplyIcon from "@mui/icons-material/Reply";
+import ImageIcon from "@mui/icons-material/Image";
+import * as utils from "./../utils/Utill"
+function formatDateArray(dateArray, format = "dd/MM/yyyy HH:mm:ss") {
+  if (!dateArray || dateArray.length < 3) return "";
+  const [year, month, day, hours = 0, minutes = 0, seconds = 0] = dateArray;
+  const date = new Date(year, month - 1, day, hours, minutes, seconds);
+  if (isNaN(date.getTime())) return "Invalid Date";
+  const pad = (num) => num.toString().padStart(2, "0");
+  const replacements = {
+    dd: pad(date.getDate()),
+    MM: pad(date.getMonth() + 1),
+    yyyy: date.getFullYear(),
+    HH: pad(date.getHours()),
+    mm: pad(date.getMinutes()),
+    ss: pad(date.getSeconds()),
+  };
+  return format.replace(/dd|MM|yyyy|HH|mm|ss/g, (match) => replacements[match]);
+}
 
 const ProductComment = ({ productId, currentUser }) => {
   const primaryColor = "#005244";
   const lightPrimary = "#e0f2f1";
+  const [comment, setComment] = useState("");
   const [images, setImages] = useState([]);
   const [replyingTo, setReplyingTo] = useState(null);
   const [replyContent, setReplyContent] = useState("");
   const [typing, setTyping] = useState(false);
-  const [typingTimeout, setTypingTimeout] = useState(null);
+  const [feedbackId, setFeedbackId] = useState(null);
   const fileInputRef = useRef(null);
   const replyInputRef = useRef(null);
-
-  const [reviews, setReviews] = useState([
-    {
-      id: 1,
-      user: "user123",
-      date: "2025-01-15",
-      rating: 5,
-      comment: "Sản phẩm tuyệt vời, chất lượng tốt",
-      hasMedia: true,
-      replies: [
-        {
-          id: 101,
-          user: "shop_owner",
-          date: "2025-01-16",
-          comment: "Cảm ơn bạn đã đánh giá!",
-        },
-        {
-          id: 102,
-          user: "user456",
-          date: "2025-01-16",
-          comment: "Tôi cũng thấy sản phẩm rất tốt",
-        },
-      ],
-      showReplies: true,
-    },
-    {
-      id: 2,
-      user: "user456",
-      date: "2025-01-17",
-      rating: 4,
-      comment: "Sản phẩm tốt nhưng giá hơi cao",
-      hasMedia: false,
-      replies: [
-        {
-          id: 201,
-          user: "shop_owner",
-          date: "2025-01-18",
-          comment: "Chúng tôi sẽ xem xét về giá cả, cảm ơn góp ý của bạn!",
-        },
-      ],
-      showReplies: false,
-    },
-    {
-      id: 3,
-      user: "user789",
-      date: "2025-01-20",
-      rating: 5,
-      comment: "Giao hàng nhanh, đóng gói cẩn thận",
-      hasMedia: true,
-      replies: [],
-      showReplies: false,
-    },
-  ]);
+  const dispatch = useDispatch();
+  const token = localStorage.getItem("token");
+  const [change, setChange] = useState(false);
+  const [unique, setUnique] = useState(""); // cái biến này để dựa vào cái này để phân biệt các feedbackMessage khác nhau để thao tác
+  const size = 15;
+  const [page, setPage] = useState(0);
+  const [rating, setRating] = useState(0);
+  const { feedbacks } = useSelector((store) => store);
+  const [selectedRating, setSelectedRating] = useState(0);
+  const [replyImages, setReplyImages] = useState([]);
+  const replyFileInputRef = useRef(null);
+  const [showInputReply, setShowInputReply] = useState(false);
+  const [showReplyInput, setShowReplyInput] = useState({});
+  const [replyMessage, setReplyMessage] = useState("");
   const ratingData = {
     average: 4.9,
     total: 45,
@@ -101,14 +90,62 @@ const ProductComment = ({ productId, currentUser }) => {
       { stars: 1, count: 0 },
     ],
   };
+  // lấy danh sách ảnh lên mà kiểm tra
   const handleImageUpload = (e) => {
     const files = Array.from(e.target.files);
-    const newImages = files.map((file) => ({
-      file,
-      preview: URL.createObjectURL(file),
-    }));
-    setImages([...images, ...newImages]);
+    // Danh sách định dạng hỗ trợ (đồng bộ với BE)
+    const supportedExtensions = [
+      ".jpg",
+      ".jpeg",
+      ".png",
+      ".gif",
+      ".mp4",
+      ".mpeg",
+    ];
+    const supportedMimeTypes = [
+      "image/jpeg",
+      "image/png",
+      "image/gif",
+      "video/mp4",
+      "video/mpeg",
+    ];
+    const newFiles = files
+      .map((file) => {
+        // Kiểm tra kích thước (ví dụ tối đa 50MB cho video)
+        if (file.size > 50 * 1024 * 1024) {
+          alert(`File ${file.name} quá lớn! Tối đa 50MB`);
+          return null;
+        }
+
+        // Kiểm tra extension (đuôi file)
+        const fileExtension = file.name
+          .toLowerCase()
+          .slice(file.name.lastIndexOf("."));
+        if (!supportedExtensions.includes(fileExtension)) {
+          alert(`Định dạng file ${fileExtension} không được hỗ trợ!`);
+          return null;
+        }
+
+        // Kiểm tra MIME type (đồng bộ với BE)
+        if (!supportedMimeTypes.includes(file.type)) {
+          alert(`Loại file ${file.type} không được hỗ trợ!`);
+          return null;
+        }
+        return {
+          file,
+          preview: file.type.startsWith("video/")
+            ? null // Video không có preview URL
+            : URL.createObjectURL(file),
+          type: file.type.startsWith("video/") ? "video" : "image",
+          extension: fileExtension,
+        };
+      })
+      .filter(Boolean);
+
+    setImages((prev) => [...prev, ...newFiles]);
   };
+
+  // xóa ảnh khi gửi lên
   const handleRemoveImage = (index) => {
     const newImages = [...images];
     URL.revokeObjectURL(newImages[index].preview);
@@ -116,104 +153,76 @@ const ProductComment = ({ productId, currentUser }) => {
     setImages(newImages);
   };
 
+  // xử lý sự kiện dán ở trong ô nhập bình luận
   const handlePaste = (e) => {
     const items = (e.clipboardData || window.clipboardData).items;
     for (let i = 0; i < items.length; i++) {
       if (items[i].type.indexOf("image") !== -1) {
         const blob = items[i].getAsFile();
-        const image = {
-          file: blob,
-          preview: URL.createObjectURL(blob),
-        };
-        setImages([...images, image]);
+        if (blob instanceof Blob) {
+          // Kiểm tra lại xem có phải Blob không
+          const image = {
+            file: blob,
+            preview: URL.createObjectURL(blob),
+          };
+          setImages((prevImages) => [...prevImages, image]);
+        } else {
+          console.error("Dữ liệu không phải là file hợp lệ:", blob);
+        }
       }
     }
   };
+
+  // hiển thị các phản hồi theo logic true false
   const handleReply = (reviewId) => {
     setReplyingTo(reviewId);
     setTimeout(() => {
       replyInputRef.current?.focus();
     }, 100);
-  };
-  const handleSubmitReply = () => {
-    if (replyContent.trim() && replyingTo) {
-      setTyping(true);
-
-      // Simulate typing effect
-      setTimeout(() => {
-        setReviews(
-          reviews.map((review) => {
-            if (review.id === replyingTo) {
-              return {
-                ...review,
-                replies: [
-                  ...review.replies,
-                  {
-                    id: Math.max(...review.replies.map((r) => r.id), 0) + 1,
-                    user: "current_user",
-                    date: new Date().toISOString().split("T")[0],
-                    comment: replyContent,
-                  },
-                ],
-                showReplies: true,
-              };
-            }
-            return review;
-          })
-        );
-
-        setReplyContent("");
-        setReplyingTo(null);
-        setTyping(false);
-      }, 1500); // Simulate typing time
+    if (showInputReply) {
+      setShowInputReply(false);
+      setFeedbackId(null);
+    } else {
+      setShowInputReply(true);
     }
   };
-  const handleTyping = () => {
-    if (typingTimeout) {
-      clearTimeout(typingTimeout);
+
+  // quản lý việc show feedback phản hồi
+  const toggleReplies = (feedbackId, status) => {
+    console.log("status của bạn là: ", status);
+    if (status) {
+      dispatch(
+        feedbackService.updateStatusShowFeedbackMessage(feedbackId, false)
+      );
+    } else {
+      dispatch(
+        feedbackService.updateStatusShowFeedbackMessage(feedbackId, true)
+      );
     }
-
-    setTyping(true);
-    setTypingTimeout(
-      setTimeout(() => {
-        setTyping(false);
-      }, 2000)
-    );
   };
-  const toggleReplies = (reviewId) => {
-    setReviews(
-      reviews.map((review) => {
-        if (review.id === reviewId) {
-          return {
-            ...review,
-            showReplies: !review.showReplies,
-          };
-        }
-        return review;
-      })
-    );
-  };
-
-  console.log("user: ", currentUser);
-  console.log("prudctId: ", productId);
-  const [comment, setComment] = useState("");
-  const typingTimeoutRef = useRef({
-    timer: null,
-    isTyping: false
-  });
-  const { typingUsers, sendTypingEvent } = useTypingIndicator(
-    productId,
-    currentUser?.userId
-  );
-
+  //hook websocket
   const { isConnected, sendMessage } = useWebSocket(
     `http://localhost:8080/ws`,
-    [`/topic/comments/${productId}`],
+    [`/topic/comments`],
     (comment) => {
-      console.log("New comment received from server:", comment);
+      console.log("== RAW comment từ WebSocket:", comment);
+      try {
+        if (comment.feedbackId) {
+          console.log("da di vao trong casi nafy");
+          uploadReplyImage(comment.unique);
+          handleLoadDataComment();
+        } else {
+          setChange(true);
+          setUnique(comment.unique);
+          uploadImage(comment.unique);
+          handleLoadDataComment();
+        }
+      } catch (err) {
+        console.error("❌ JSON parse failed:", err);
+      }
     }
   );
-
+  // log ra kiểm tra kết nối với websocket
   useEffect(() => {
     console.log(
       `WebSocket connection status: ${
@@ -222,47 +231,77 @@ const ProductComment = ({ productId, currentUser }) => {
     );
   }, [isConnected]);
 
-  const handleCommentChange = useCallback(
-    (e) => {
-      setComment(e.target.value);
-  
-      // Gửi sự kiện bắt đầu typing nếu chưa gửi
-      if (!typingTimeoutRef.current.isTyping) {
-        sendTypingEvent(true);
-        typingTimeoutRef.current.isTyping = true;
-      }
-  
-      // Reset timeout
-      clearTimeout(typingTimeoutRef.current.timer);
-      typingTimeoutRef.current.timer = setTimeout(() => {
-        sendTypingEvent(false);
-        typingTimeoutRef.current.isTyping = false;
-      }, 2000);
-    },
-    [sendTypingEvent]
-  );
-  // Gửi khi blur khỏi textarea
-  const handleBlur = useCallback(() => {
-    clearTimeout(typingTimeoutRef.current.timer);
-    if (typingTimeoutRef.current.isTyping) {
-      sendTypingEvent(false);
-      typingTimeoutRef.current.isTyping = false;
-    }
-  }, [sendTypingEvent]);
+  // load lấy tất cả dữ liệu về bình luận và ảnh video
+  useEffect(() => {
+    handleLoadDataComment();
+    setFeedbackId(null);
+  }, [productId]);
+  useEffect(() => {
+    setFeedbackId(null);
+  }, []);
+  // lấy tổng tất cả dữ liệu bình luận và ảnh video
+  const handleLoadDataComment = async () => {
+    await dispatch(feedbackService.getAllFeedbacks({ productId, page, size, selectedRating, token }));
+    await dispatch(feedbackService.countCommentByRating({ productId, token }));
+    await dispatch(feedbackService.countAllComment({ productId, token }));
+    await dispatch(feedbackService.countAllMedia({ productId, token }));
+    await dispatch(feedbackService.getAllTotalPage( productId,selectedRating,token ));
+    await dispatch(feedbackService.getAverageRating( productId, token ));
+  };
 
-  const handleSubmitComment = () => {
-    if (comment.trim()) {
-      sendMessage(`/app/comment`, {
+
+  // xử lý ảnh bỏ vào trong biến images rồi bắt đầu gửi lên trên server
+  const uploadImage = async (unique) => {
+    if (images.length === 0) {
+      return;
+    }
+    if (images.length > 0) {
+      console.log("đã vào uplaod iamge feedback");
+      const formData = new FormData();
+      // Thêm từng file vào FormData
+      images.forEach((image, index) => {
+        if (image.file instanceof Blob) {
+          formData.append(`files`, image.file); // Key phải trùng với @RequestPart
+        }
+      });
+      await feedbackServiceMain
+        .uploadImageFeedback(formData, unique, token)
+        .then((data) => {
+          if (!data.success) {
+            alert(data.data);
+          } else {
+            setUnique("");
+            setChange(false);
+            handleLoadDataComment();
+          }
+        });
+    }
+    setImages([]);
+  };
+
+  // gửi bình luận đầu tiên
+  const handleSubmitComment = async () => {
+    if (comment.trim() || images.length > 0) {
+      sendMessage(`/app/comments`, {
         productId,
         sender: currentUser?.userId,
         comment: comment,
+        rating: rating || 5,
+        unique: "",
       });
-      console.log("Comment sent:", comment);
       setComment("");
-      sendTypingEvent(false); // Gửi sự kiện ngừng gõ
+      setRating(0);
     }
   };
+  // xử lý sự kiện bấm nút gửi bình luận
+  useEffect(() => {
+    if (change && unique !== "") {
+      uploadImage(unique);
+      setChange(false);
+    }
+  }, [change]);
 
+  // xử lý sự kiện bấm enter để gửi bình luận
   const handleKeyDown = (e) => {
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
@@ -270,8 +309,112 @@ const ProductComment = ({ productId, currentUser }) => {
     }
   };
 
-  console.log(typingUsers);
+  // phần upload ảnh trong phản hồi đầu tiên
+  const uploadReplyImage = async (unique) => {
+    console.log("đã vào upload reply image",images);
+    
+    if (replyImages.length > 0) {
+      try {
+        console.log("đã vào uplaod iamge respone");
+        let formData;
+        if (replyImages.length > 0) {
+          formData = new FormData();
+          replyImages.forEach((img) => {
+            formData.append("files", img.file);
+          });
+          await feedbackServiceMain
+            .uploadImageFeedbackResponse(formData, unique, token)
+            .then((data) => {
+              if (!data.success) {
+                alert(data.data);
+              } else {
+                alert("Thêm ảnh thành công");
+                setReplyImages([]);
+              }
+            });
+        }
+      } catch (error) {
+        console.error("Lỗi khi gửi phản hồi:", error);
+      }
+    }
+  };
 
+  // xử lý sự kiện khi bấm nút phản hồi
+  const handleSendMessRespone = async () => {
+    // Gửi phản hồi (giữ nguyên logic WebSocket của bạn)
+    sendMessage(`/app/response`, {
+      feedbackId: replyingTo,
+      sender: currentUser?.userId,
+      message: replyContent,
+      unique: "",
+    });
+    // Reset form
+    setReplyContent("");
+    setReplyingTo(null);
+    console.log("dữ liệu của bạn: ", replyContent);
+  };
+  // xử lý xử kiện bấm enter để gửi phản hồi ở dưới feedback
+  const handleKeyDownRespone = (e) => {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+      handleSendMessRespone();
+    }
+  };
+  // thao tác logic để hiển thị ô input phản hồi
+  const toggleReplyInput = (feedbackId) => {
+    setShowReplyInput((prev) => ({
+      ...prev,
+      [feedbackId]: !prev[feedbackId],
+    }));
+    setReplyMessage("");
+  };
+  // cái này là phần bấm submit để gửi phản hồi cho feedback ô input ở dưới feedback
+  const handleSendReply = (feedbackId) => {
+    console.log(
+      "Gửi reply cho feedback:",
+      feedbackId,
+      "Nội dung:",
+      replyMessage
+    );
+    if (replyMessage.trim()) {
+      sendMessage(`/app/response`, {
+        feedbackId: feedbackId,
+        sender: currentUser?.userId,
+        message: replyMessage,
+        unique: "",
+      });
+    }
+    setReplyMessage("");
+    toggleReplyInput(feedbackId);
+  };
+
+  const handleSelectPage = (pageNumber) => {
+    setPage(pageNumber-1);
+    setChange(true);
+    console.log("page của bạn là: ", pageNumber);
+  }
+  useEffect(() => {
+    console.log("đã đi vào trong này rồi nè");
+    
+    loadDataWithRatingOrPage();
+    
+  },[selectedRating, page]);
+  const loadDataWithRatingOrPage =  async () => {
+    console.log("select rating của bạn là: ", selectedRating);
+    
+      await dispatch(
+        feedbackService.getAllFeedbacks({ productId, page, size, selectedRating, token })
+      );
+    await dispatch(feedbackService.getAllTotalPage( productId,selectedRating,token ));
+  };
+   // Hàm xử lý khi click vào nút rating
+   const handleRatingFilter = (rating) => {
+    console.log(`Đã chọn rating: ${rating}`);
+    setSelectedRating(rating);
+    console.log("select rating của bạn là: ", selectedRating);
+    
+    // Thêm các xử lý khác nếu cần (như filter comments...)
+  };
   return (
     <Box
       sx={{
@@ -298,7 +441,7 @@ const ProductComment = ({ productId, currentUser }) => {
           ĐÁNH GIÁ SẢN PHẨM
         </Typography>
 
-        {/* Rating Summary */}
+        {/* đánh giá 4.9★★★★★(45) */}
         <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
           <Typography
             variant="h5"
@@ -308,13 +451,13 @@ const ProductComment = ({ productId, currentUser }) => {
               color: primaryColor,
             }}
           >
-            {ratingData.average}
+            {parseFloat(feedbacks.averageRating).toFixed(2)}
           </Typography>
           <Typography sx={{ mr: 1 }}>★★★★★</Typography>
-          <Typography>({ratingData.total})</Typography>
+          <Typography>({feedbacks.countComment}) </Typography>
         </Box>
 
-        {/* Long Divider */}
+        {/* Dấu ngăn cách */}
         <Divider
           sx={{
             my: 2,
@@ -322,56 +465,87 @@ const ProductComment = ({ productId, currentUser }) => {
             borderColor: primaryColor,
           }}
         />
+        {/* Hàm hiển thị số lượng bình luận theo đánh giá sao*/}
+        <Box sx={{ display: "flex", gap: 1, flexWrap: "wrap" }}>
+          {[1, 2, 3, 4, 5].map((star) => {
+            const ratingData = feedbacks.commentsRating?.find(
+              (item) => item[0] === star
+            );
+            const count = ratingData ? ratingData[1] : 0;
+            const hasComments = count > 0;
+            const isSelected = selectedRating === star;
 
-        {/* Rating Buttons - Single Row */}
-        <Box
-          sx={{
-            display: "flex",
-            gap: 1,
-            mb: 2,
-            flexWrap: "wrap",
-          }}
-        >
-          {ratingData.breakdown.map((item, index) => (
-            <Button
-              key={index}
-              variant="outlined"
-              size="small"
-              sx={{
-                minWidth: 0,
-                px: 1.5,
-                py: 0.5,
-                borderColor: "#e0e0e0",
-                backgroundColor: "#f5f5f5",
-                "&:hover": {
-                  borderColor: "#00796b",
-                  backgroundColor: "#e0f2f1",
-                },
-              }}
-            >
-              <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
-                <Typography variant="body2" sx={{ color: "#00796b" }}>
-                  {[...Array(item.stars)].map((_, i) => (
-                    <span key={i} style={{ color: "#ffb300" }}>
-                      ★
-                    </span>
-                  ))}
-                </Typography>
-                <Typography
-                  variant="body2"
-                  sx={{
-                    fontWeight: "bold",
-                    color: "#00796b",
-                  }}
-                >
-                  ({item.count})
-                </Typography>
-              </Box>
-            </Button>
-          ))}
+            return (
+              <Button
+                key={star}
+                variant="outlined"
+                size="small"
+                disabled={!hasComments}
+                onClick={() => hasComments && handleRatingFilter(star)}
+                sx={{
+                  minWidth: 0,
+                  px: 1.5,
+                  py: 0.5,
+                  borderColor: isSelected ? "#00796b" : "#e0e0e0",
+                  backgroundColor: isSelected
+                    ? "#e0f2f1"
+                    : hasComments
+                    ? "#f5f5f5"
+                    : "#fafafa",
+                  "&:hover": hasComments
+                    ? {
+                        borderColor: "#00796b",
+                        backgroundColor: isSelected ? "#e0f2f1" : "#b2dfdb",
+                      }
+                    : {},
+                  "&.Mui-disabled": {
+                    opacity: 0.7,
+                    borderColor: "#e0e0e0",
+                  },
+                }}
+              >
+                <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
+                  {/* Hiển thị sao */}
+                  <Typography component="span" sx={{ color: "#00796b" }}>
+                    {Array.from({ length: star }).map((_, i) => (
+                      <span
+                        key={i}
+                        style={{
+                          color: isSelected
+                            ? "#ff8f00"
+                            : hasComments
+                            ? "#ffb300"
+                            : "#e0e0e0",
+                          fontSize: "1rem",
+                        }}
+                      >
+                        ★
+                      </span>
+                    ))}
+                  </Typography>
+
+                  {/* Hiển thị số lượng */}
+                  <Typography
+                    component="span"
+                    sx={{
+                      fontWeight: "bold",
+                      color: isSelected
+                        ? "#00796b"
+                        : hasComments
+                        ? "#00796b"
+                        : "#bdbdbd",
+                      fontSize: "0.875rem",
+                    }}
+                  >
+                    ({count})
+                  </Typography>
+                </Box>
+              </Button>
+            );
+          })}
         </Box>
 
-        {/* Review Stats - Single Row */}
+        {/* Tổng số bình luận và hình ảnh video */}
         <Box
           sx={{
             display: "flex",
@@ -380,14 +554,14 @@ const ProductComment = ({ productId, currentUser }) => {
           }}
         >
           <Button variant="text" size="small" sx={{ color: primaryColor }}>
-            Có Bình Luận ({ratingData.total})
+            Có Bình Luận ({feedbacks.countComment})
           </Button>
           <Button variant="text" size="small" sx={{ color: primaryColor }}>
-            Có Hình Ảnh / Video ({ratingData.withMedia})
+            Có Hình Ảnh / Video ({feedbacks.countMedia})
           </Button>
         </Box>
 
-        {/* Comment Input Box */}
+        {/* Đây form để nhập các bình luận */}
         <Box sx={{ mb: 3, mt: 3 }}>
           <Typography variant="subtitle1" sx={{ mb: 1, fontWeight: "bold" }}>
             Viết đánh giá của bạn
@@ -399,14 +573,43 @@ const ProductComment = ({ productId, currentUser }) => {
               p: 1.5,
             }}
           >
+            {/* Phần đánh giá sao */}
+            <Box sx={{ mb: 2, display: "flex", alignItems: "center" }}>
+              <Typography variant="body2" sx={{ mr: 1 }}>
+                Đánh giá:
+              </Typography>
+              {[1, 2, 3, 4, 5].map((star) => (
+                <IconButton
+                  key={star}
+                  size="small"
+                  onClick={() => setRating(star)}
+                  sx={{ p: 0.5 }}
+                >
+                  <Star
+                    sx={{
+                      color: star <= rating ? "#FFD700" : "#e0e0e0",
+                      fontSize: 24,
+                    }}
+                  />
+                </IconButton>
+              ))}
+              <Typography
+                variant="caption"
+                sx={{ ml: 1, color: "text.secondary" }}
+              >
+                {rating > 0 ? `${rating} sao` : "Chưa đánh giá"}
+              </Typography>
+            </Box>
+
             <TextField
               fullWidth
               multiline
               rows={3}
               placeholder="Nhập bình luận của bạn..."
               value={comment}
-              onChange={handleCommentChange}
-              onBlur={handleBlur}
+              onChange={(e) => {
+                setComment(e.target.value);
+              }}
               onKeyDown={handleKeyDown}
               onPaste={handlePaste}
               variant="outlined"
@@ -424,61 +627,51 @@ const ProductComment = ({ productId, currentUser }) => {
                 },
               }}
             />
-            {/* dấu 3 chấm hiện khi gõ  */}
-            {Object.entries(typingUsers).some(([_, isTyping]) => isTyping) && (
-              <Box sx={{ display: "flex", alignItems: "center", mt: 1 }}>
-                <Typography variant="body2" color="text.secondary">
-                  {Object.entries(typingUsers)
-                    .filter(([_, isTyping]) => isTyping)
-                    .map(([userId]) => userId)
-                    .join(", ")}{" "}
-                  đang soạn tin nhắn...
-                </Typography>
-                <Box sx={{ display: "flex", ml: 1 }}>
-                  {[0, 0.2, 0.4].map((delay, i) => (
-                    <Box
-                      key={i}
-                      sx={{
-                        width: 6,
-                        height: 6,
-                        bgcolor: "text.secondary",
-                        borderRadius: "50%",
-                        mx: 0.5,
-                        animation: "typingBounce 1.2s infinite ease-in-out",
-                        animationDelay: `${delay}s`,
-                        "@keyframes typingBounce": {
-                          "0%, 80%, 100%": { transform: "scale(0)" },
-                          "40%": { transform: "scale(1)" },
-                        },
-                      }}
-                    />
-                  ))}
-                </Box>
-              </Box>
-            )}
 
             {/* Preview Images */}
             {images.length > 0 && (
               <Box sx={{ mt: 1, display: "flex", flexWrap: "wrap", gap: 1 }}>
-                {images.map((image, index) => (
+                {images.map((item, index) => (
                   <Box
                     key={index}
                     sx={{
                       position: "relative",
                       width: 100,
                       height: 100,
+                      border: "1px solid #e0e0e0",
+                      borderRadius: 1,
+                      overflow: "hidden",
+                      bgcolor: "#f5f5f5",
                     }}
                   >
-                    <img
-                      src={image.preview}
-                      alt={`preview-${index}`}
-                      style={{
-                        width: "100%",
-                        height: "100%",
-                        objectFit: "cover",
-                        borderRadius: 4,
-                      }}
-                    />
+                    {item.type === "image" ? (
+                      <img
+                        src={item.preview}
+                        alt={`preview-${index}`}
+                        style={{
+                          width: "100%",
+                          height: "100%",
+                          objectFit: "cover",
+                        }}
+                      />
+                    ) : (
+                      <Box
+                        sx={{
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          height: "100%",
+                        }}
+                      >
+                        <Videocam
+                          sx={{ color: "text.secondary", fontSize: 40 }}
+                        />
+                        <Typography variant="caption" sx={{ ml: 1 }}>
+                          {item.file.name}
+                        </Typography>
+                      </Box>
+                    )}
+
                     <IconButton
                       size="small"
                       sx={{
@@ -487,9 +680,7 @@ const ProductComment = ({ productId, currentUser }) => {
                         right: 0,
                         bgcolor: "rgba(0,0,0,0.5)",
                         color: "white",
-                        "&:hover": {
-                          bgcolor: "rgba(0,0,0,0.7)",
-                        },
+                        "&:hover": { bgcolor: "rgba(0,0,0,0.7)" },
                       }}
                       onClick={() => handleRemoveImage(index)}
                     >
@@ -515,7 +706,7 @@ const ProductComment = ({ productId, currentUser }) => {
                   ref={fileInputRef}
                   onChange={handleImageUpload}
                   multiple
-                  accept="image/*"
+                  accept="image/*,video/*"
                   hidden
                 />
                 <IconButton
@@ -523,7 +714,9 @@ const ProductComment = ({ productId, currentUser }) => {
                   sx={{ color: primaryColor }}
                 >
                   <Badge badgeContent={images.length} color="primary">
-                    <AttachFile />
+                    <Box sx={{ display: "flex" }}>
+                      <AttachFile />
+                    </Box>
                   </Badge>
                 </IconButton>
                 <IconButton sx={{ color: primaryColor }}>
@@ -550,16 +743,16 @@ const ProductComment = ({ productId, currentUser }) => {
 
         {/* Reviews List */}
         <Box sx={{ mt: 2 }}>
-          {reviews.map((review) => (
+          {feedbacks?.feedbacks.map((review) => (
             <Box
-              key={review.id}
+              key={review.feedbackId}
               sx={{
                 mb: 2,
                 borderBottom: `1px solid ${lightPrimary}`,
                 pb: 2,
               }}
             >
-              {/* Main Review */}
+              {/* feedback chính */}
               <Box sx={{ display: "flex", alignItems: "flex-start" }}>
                 <Avatar
                   sx={{
@@ -568,8 +761,9 @@ const ProductComment = ({ productId, currentUser }) => {
                     bgcolor: primaryColor,
                     mr: 1,
                   }}
+                  src={review.user.imgUrl}
                 >
-                  {review.user.charAt(0)}
+                  {review.user.imgUrl}
                 </Avatar>
                 <Box sx={{ flex: 1 }}>
                   <Box sx={{ display: "flex", alignItems: "center" }}>
@@ -577,30 +771,37 @@ const ProductComment = ({ productId, currentUser }) => {
                       variant="subtitle2"
                       sx={{ fontWeight: "bold", mr: 1 }}
                     >
-                      {review.user}
+                      {review.user.fullName}
                     </Typography>
                     <Typography
                       variant="caption"
                       sx={{ color: "text.secondary" }}
                     >
-                      {review.date} | {"★".repeat(review.rating)}
+                      {formatDateArray(review.createAt, "yyyy-MM-dd HH:mm")} |{" "}
+                      {"★".repeat(review.rating)}
                     </Typography>
                   </Box>
 
                   <Typography variant="body2" sx={{ mt: 1 }}>
-                    {review.comment}
+                    {review.content}
                   </Typography>
 
-                  {review.hasMedia && (
-                    <Chip
-                      label="Hình ảnh/video"
-                      size="small"
-                      sx={{
-                        mt: 0.5,
-                        bgcolor: lightPrimary,
-                        color: primaryColor,
-                      }}
-                    />
+                  {review?.feedbackMedia.map((media, index) =>
+                    media.mediaUrl.endsWith(".mp4") ? (
+                      <video
+                        key={index}
+                        width="200"
+                        controls
+                        src={`${BASE_API_URL}/api/comment/media?link=${media.mediaUrl}`}
+                      />
+                    ) : (
+                      <img
+                        key={index}
+                        width="200"
+                        src={`${BASE_API_URL}/api/comment/media?link=${media.mediaUrl}`}
+                        alt={`Media ${index}`}
+                      />
+                    )
                   )}
 
                   <Box sx={{ display: "flex", mt: 1 }}>
@@ -608,11 +809,11 @@ const ProductComment = ({ productId, currentUser }) => {
                       startIcon={<Reply fontSize="small" />}
                       size="small"
                       sx={{ color: primaryColor }}
-                      onClick={() => handleReply(review.id)}
+                      onClick={() => handleReply(review.feedbackId)}
                     >
                       Phản hồi
                     </Button>
-                    {review.replies.length > 0 && (
+                    {review?.feedbackMessages.length > 0 && (
                       <Button
                         startIcon={
                           review.showReplies ? (
@@ -623,9 +824,11 @@ const ProductComment = ({ productId, currentUser }) => {
                         }
                         size="small"
                         sx={{ color: primaryColor }}
-                        onClick={() => toggleReplies(review.id)}
+                        onClick={() =>
+                          toggleReplies(review.feedbackId, review.status)
+                        }
                       >
-                        {review.replies.length} phản hồi
+                        {review?.feedbackMessages.length} phản hồi tin nhắn
                       </Button>
                     )}
                   </Box>
@@ -633,44 +836,153 @@ const ProductComment = ({ productId, currentUser }) => {
               </Box>
 
               {/* Reply Input */}
-              {replyingTo === review.id && (
+              {replyingTo === review.feedbackId && showInputReply && (
                 <Box sx={{ ml: 6, mt: 1 }}>
+                  {/* Ô nhập phản hồi */}
                   <TextField
                     fullWidth
                     multiline
                     rows={2}
                     placeholder="Viết phản hồi..."
                     value={replyContent}
-                    onChange={(e) => {
-                      setReplyContent(e.target.value);
-                      handleTyping();
+                    onKeyDown={handleKeyDownRespone}
+                    onChange={(e) => setReplyContent(e.target.value)}
+                    onPaste={(e) => {
+                      const items = (e.clipboardData || window.clipboardData)
+                        .items;
+                      const newImages = [];
+                      for (let i = 0; i < items.length; i++) {
+                        if (items[i].type.indexOf("image") !== -1) {
+                          const blob = items[i].getAsFile();
+                          if (blob) {
+                            newImages.push({
+                              file: blob,
+                              preview: URL.createObjectURL(blob),
+                              type: "image",
+                            });
+                          }
+                        }
+                      }
+                      setReplyImages((prev) => [...prev, ...newImages]);
                     }}
                     variant="outlined"
                     size="small"
                     inputRef={replyInputRef}
-                    sx={{
-                      "& .MuiOutlinedInput-root": {
-                        fontSize: "0.875rem",
-                      },
-                    }}
                   />
+
+                  {/* Hiển thị preview hình ảnh/video phản hồi */}
+                  {replyImages.length > 0 && (
+                    <Box
+                      sx={{ mt: 1, display: "flex", flexWrap: "wrap", gap: 1 }}
+                    >
+                      {replyImages.map((item, index) => (
+                        <Box
+                          key={index}
+                          sx={{ position: "relative", width: 100, height: 100 }}
+                        >
+                          {item.type === "image" ? (
+                            <img
+                              src={item.preview}
+                              alt={`preview-${index}`}
+                              style={{
+                                width: "100%",
+                                height: "100%",
+                                objectFit: "cover",
+                              }}
+                            />
+                          ) : (
+                            <Box
+                              sx={{
+                                display: "flex",
+                                alignItems: "center",
+                                justifyContent: "center",
+                                height: "100%",
+                              }}
+                            >
+                              <Videocam
+                                sx={{ color: "text.secondary", fontSize: 40 }}
+                              />
+                            </Box>
+                          )}
+                          <IconButton
+                            size="small"
+                            sx={{
+                              position: "absolute",
+                              top: 0,
+                              right: 0,
+                              bgcolor: "rgba(0,0,0,0.5)",
+                              color: "white",
+                              "&:hover": { bgcolor: "rgba(0,0,0,0.7)" },
+                            }}
+                            onClick={() => {
+                              URL.revokeObjectURL(replyImages[index].preview);
+                              const newImages = [...replyImages];
+                              newImages.splice(index, 1);
+                              setReplyImages(newImages);
+                            }}
+                          >
+                            <Close fontSize="small" />
+                          </IconButton>
+                        </Box>
+                      ))}
+                    </Box>
+                  )}
+
+                  {/* Thanh công cụ phản hồi */}
                   <Box
                     sx={{
                       display: "flex",
-                      justifyContent: "flex-end",
+                      justifyContent: "space-between",
                       mt: 1,
                     }}
                   >
+                    <Box>
+                      {/* Input file ẩn */}
+                      <input
+                        type="file"
+                        ref={replyFileInputRef}
+                        onChange={(e) => {
+                          const files = Array.from(e.target.files);
+                          const newImages = files.map((file) => ({
+                            file,
+                            preview: file.type.startsWith("video/")
+                              ? null
+                              : URL.createObjectURL(file),
+                            type: file.type.startsWith("video/")
+                              ? "video"
+                              : "image",
+                          }));
+                          setReplyImages((prev) => [...prev, ...newImages]);
+                        }}
+                        accept="image/*,video/*"
+                        multiple
+                        hidden
+                      />
+
+                      {/* Icon đính kèm */}
+                      <IconButton
+                        onClick={() => replyFileInputRef.current.click()}
+                        sx={{ color: primaryColor }}
+                      >
+                        <Badge
+                          badgeContent={replyImages.length}
+                          color="primary"
+                        >
+                          <AttachFile fontSize="small" />
+                        </Badge>
+                      </IconButton>
+                    </Box>
+
                     <Button
                       variant="contained"
-                      size="small"
-                      onClick={handleSubmitReply}
-                      disabled={!replyContent.trim()}
+                      endIcon={<Send />}
+                      onClick={handleSendMessRespone}
+                      disabled={
+                        !replyContent.trim() && replyImages.length === 0
+                      }
                       sx={{
                         bgcolor: primaryColor,
-                        "&:hover": {
-                          bgcolor: "#003d33",
-                        },
+                        "&:hover": { bgcolor: "#003d33" },
                       }}
                     >
                       Gửi
@@ -678,9 +990,8 @@ const ProductComment = ({ productId, currentUser }) => {
                   </Box>
                 </Box>
               )}
-
               {/* Typing Indicator */}
-              {typing && replyingTo === review.id && (
+              {typing && replyingTo === review.feedbackId && (
                 <Box
                   sx={{ ml: 6, mt: 1, display: "flex", alignItems: "center" }}
                 >
@@ -733,70 +1044,170 @@ const ProductComment = ({ productId, currentUser }) => {
               )}
 
               {/* Replies List */}
-              <Collapse in={review.showReplies && review.replies.length > 0}>
-                <Box sx={{ ml: 6, mt: 1 }}>
-                  {review.replies.map((reply) => (
-                    <Box
-                      key={reply.id}
-                      sx={{
-                        display: "flex",
-                        alignItems: "flex-start",
-                        mb: 1.5,
-                        pt: 1.5,
-                        borderTop: `1px solid ${lightPrimary}`,
-                      }}
-                    >
-                      <Avatar
-                        sx={{
-                          width: 28,
-                          height: 28,
-                          bgcolor: primaryColor,
-                          mr: 1,
-                          fontSize: "0.875rem",
-                        }}
-                      >
-                        {reply.user.charAt(0)}
-                      </Avatar>
-                      <Box>
-                        <Box sx={{ display: "flex", alignItems: "center" }}>
-                          <Typography
-                            variant="subtitle2"
+              {!review.status && (
+                <>
+                  <Collapse in={review.feedbackMessages.length > 0}>
+                    <Box sx={{ ml: 6, mt: 1 }}>
+                      {review?.feedbackMessages.map((reply) => (
+                        <Box
+                          key={reply.fbMessageId}
+                          sx={{
+                            display: "flex",
+                            alignItems: "flex-start",
+                            mb: 1.5,
+                            pt: 1.5,
+                            borderTop: `1px solid ${lightPrimary}`,
+                          }}
+                        >
+                          <Avatar
                             sx={{
-                              fontWeight: "bold",
+                              width: 28,
+                              height: 28,
+                              bgcolor: primaryColor,
                               mr: 1,
                               fontSize: "0.875rem",
                             }}
-                          >
-                            {reply.user}
-                          </Typography>
-                          <Typography
-                            variant="caption"
+                            src={reply.sender.imgUrl}
+                          ></Avatar>
+                          <Box>
+                            <Box sx={{ display: "flex", alignItems: "center" }}>
+                              <Typography
+                                variant="subtitle2"
+                                sx={{
+                                  fontWeight: "bold",
+                                  mr: 1,
+                                  fontSize: "0.875rem",
+                                }}
+                              >
+                                {reply.sender.fullName}
+                              </Typography>
+                              <Typography
+                                variant="caption"
+                                sx={{
+                                  color: "text.secondary",
+                                  fontSize: "0.75rem",
+                                }}
+                              >
+                                {format(
+                                  new Date(reply?.createdAt),
+                                  "yyyy-MM-dd HH:mm"
+                                )}
+                              </Typography>
+                            </Box>
+                            <Typography
+                              variant="body2"
+                              sx={{ mt: 0.5, fontSize: "0.875rem" }}
+                            >
+                              {reply.message}
+                            </Typography>
+                          </Box>
+                        </Box>
+                      ))}
+                    </Box>
+                  </Collapse>
+
+                  {/* Phần nút bình luận và input */}
+                  <Box sx={{ ml: 6, mt: 1 }}>
+                    {!showReplyInput[review.feedbackId] ? (
+                      <Button
+                        size="small"
+                        startIcon={<ReplyIcon fontSize="small" />}
+                        onClick={() => toggleReplyInput(review.feedbackId)}
+                        sx={{ color: "text.secondary", fontSize: "0.75rem" }}
+                      >
+                        Bình luận
+                      </Button>
+                    ) : (
+                      <Box sx={{ mt: 1 }}>
+                        <Box sx={{ mt: 1 }}>
+                          <TextField
+                            fullWidth
+                            size="small"
+                            variant="outlined"
+                            placeholder="Viết bình luận..."
+                            value={replyMessage}
+                            onChange={(e) => setReplyMessage(e.target.value)}
+                            onKeyDown={(e) => {
+                              if (
+                                e.key === "Enter" &&
+                                !e.shiftKey &&
+                                replyMessage.trim()
+                              ) {
+                                e.preventDefault(); // Ngăn chặn xuống dòng
+                                handleSendReply(review.feedbackId);
+                              }
+                            }}
                             sx={{
-                              color: "text.secondary",
-                              fontSize: "0.75rem",
+                              "& .MuiOutlinedInput-root": {
+                                fontSize: "0.875rem",
+                                "& fieldset": {
+                                  borderColor: "#00917B",
+                                },
+                                "&:hover fieldset": {
+                                  borderColor: "#00917B",
+                                },
+                              },
+                            }}
+                          />
+                          <Box
+                            sx={{
+                              display: "flex",
+                              justifyContent: "flex-end",
+                              mt: 1,
+                              gap: 1,
                             }}
                           >
-                            {reply.date}
-                          </Typography>
+                            <Button
+                              size="small"
+                              variant="text"
+                              onClick={() => {
+                                setReplyMessage("");
+                                toggleReplyInput(review.feedbackId);
+                              }}
+                              sx={{
+                                fontSize: "0.75rem",
+                                color: "#00917B",
+                                "&:hover": {
+                                  backgroundColor: "rgba(0, 145, 123, 0.08)",
+                                },
+                              }}
+                            >
+                              Hủy
+                            </Button>
+                            <Button
+                              size="small"
+                              variant="contained"
+                              onClick={() => handleSendReply(review.feedbackId)}
+                              disabled={!replyMessage.trim()}
+                              sx={{
+                                fontSize: "0.75rem",
+                                backgroundColor: "#00917B",
+                                color: "#fff",
+                                "&:hover": {
+                                  backgroundColor: "#007A66",
+                                },
+                                "&:disabled": {
+                                  backgroundColor: "rgba(0, 145, 123, 0.3)",
+                                  color: "rgba(255, 255, 255, 0.5)",
+                                },
+                              }}
+                            >
+                              Gửi
+                            </Button>
+                          </Box>
                         </Box>
-                        <Typography
-                          variant="body2"
-                          sx={{ mt: 0.5, fontSize: "0.875rem" }}
-                        >
-                          {reply.comment}
-                        </Typography>
                       </Box>
-                    </Box>
-                  ))}
-                </Box>
-              </Collapse>
+                    )}
+                  </Box>
+                </>
+              )}
             </Box>
           ))}
         </Box>
 
         {/* Pagination */}
         <Pagination
-          count={5}
+          count={feedbacks.totalPage}
           size="small"
           sx={{
             mt: 2,
@@ -805,6 +1216,7 @@ const ProductComment = ({ productId, currentUser }) => {
               color: "white",
             },
           }}
+          onChange={(event, value) => handleSelectPage(value)}
         />
       </Box>
     </Box>

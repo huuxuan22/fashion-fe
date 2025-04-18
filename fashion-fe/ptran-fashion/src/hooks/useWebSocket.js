@@ -1,5 +1,6 @@
 import { Client } from "@stomp/stompjs";
 import { set } from "date-fns";
+import { de } from "date-fns/locale";
 import { useCallback, useEffect, useRef, useState } from "react";
 import SockJS from "sockjs-client";
 
@@ -21,7 +22,6 @@ export const useWebSocket = (url,topic,onMessageReceived) => {
                 topic.forEach(topic => {
                     client.subscribe(topic, (message) => {
                         onMessageReceived(JSON.parse(message.body)); // duyệt các topic để đăng ký và nhận message từ server
-                         console.log("Received message:", message.body);
                     });
                 })
             },
@@ -47,8 +47,11 @@ export const useWebSocket = (url,topic,onMessageReceived) => {
         const client = connect();
         return client;
     },[connect]); // gọi connect mỗi khi compoennt mount
-    const sendMessage = useCallback((destination, body) => {
+    const sendMessage = useCallback((destination, body) => {        
         if (stompClient && stompClient.connected) {
+            console.log("đã vào trong này heheh");
+            console.log(destination);
+            console.log(body);
             stompClient.publish({
                 destination,
                 body: JSON.stringify(body),
