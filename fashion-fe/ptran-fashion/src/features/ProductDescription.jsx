@@ -18,7 +18,7 @@ import {
   import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
   import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
   import FlashOnIcon from '@mui/icons-material/FlashOn';
-const ProductDescription = () => {
+const ProductDescription = ({description}) => {
     const [tabValue, setTabValue] = React.useState(0);
 
     const handleTabChange = (event, newValue) => {
@@ -73,17 +73,7 @@ const ProductDescription = () => {
                     Product Description
                   </Typography>
                   <Typography variant="body2" paragraph>
-                    This exquisite Silk Blend Kanjeevaram Saree is handwoven by skilled artisans using traditional techniques passed down through generations. The saree features intricate zari work and vibrant colors that make it perfect for weddings and special occasions.
-                  </Typography>
-                  <Typography variant="body2" paragraph>
-                    The fabric is a luxurious blend of 70% silk and 30% cotton, offering both the sheen of silk and the comfort of cotton. The border and pallu showcase elaborate motifs inspired by temple architecture, with gold and silver zari detailing.
-                  </Typography>
-                  <Typography variant="body2" paragraph>
-                    • Fabric: Silk-Cotton Blend<br />
-                    • Length: 5.5 meters (with blouse piece)<br />
-                    • Weight: 650 grams<br />
-                    • Care: Dry clean only<br />
-                    • Occasion: Weddings, Festivals, Special Events
+                    {description}
                   </Typography>
                 </Box>
               )}

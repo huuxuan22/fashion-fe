@@ -19,21 +19,32 @@ import ContactMailIcon from "@mui/icons-material/ContactMail";
 import SearchIcon from "@mui/icons-material/Search";
 import { FaTruck } from "react-icons/fa";
 import * as categoryService from "./../service/category-service";
-
-
+import { useDispatch, useSelector } from "react-redux";
+import * as cartServiceRedux from "./../redux/Cart/Action"
+import * as userServiceRedux from "./../redux/User/Action"
+import NotificationDropdown from "../component/NotificationDropdown";
 const Header = () => {
   const navigate = useNavigate();
   const [anchorEl, setAnchorEl] = useState(null);
   const [activeCategory, setActiveCategory] = useState(null);
   const [categories,setCategories] = useState([]);
   const token = localStorage.getItem("token");
+  const dispatch = useDispatch();
+  const loadData = async () => {
+      await dispatch(cartServiceRedux.getAllCart(token));
+      await dispatch(userServiceRedux.currentUser(token));
+    };
   const loadCategories =async () => {
     await categoryService.getAllCategory(token).then((data) => {
       setCategories(data.data);
     })
   };
+  const {carts,users} = useSelector((store) => store);
+
+  
   useEffect(() => {
     loadCategories();
+    loadData();
   },[]);
   console.log("tôi đang ở header và danh sách categories: ", categories);
   
@@ -211,7 +222,7 @@ const Header = () => {
                 sx={{ width: 30, height: 30 }}
               />
               <Typography sx={{ color: "#388e3c", fontWeight: "bold" }}>
-                ASHOK
+                {users?.currentUser?.username}
               </Typography>
             </Box>
 
@@ -222,7 +233,7 @@ const Header = () => {
 
             {/* Cart with Badge */}
             <IconButton onClick={() => handleClickShoppingCart()}>
-              <Badge badgeContent={1} color="success">
+              <Badge badgeContent={carts.carts.length} color="success">
                 <ShoppingCart />
               </Badge>
             </IconButton>
@@ -232,7 +243,7 @@ const Header = () => {
               variant="outlined"
               sx={{ borderColor: "#388e3c", color: "#388e3c" }}
             >
-              BECOME SELLER
+              <NotificationDropdown />
             </Button>
           </Box>
         </Toolbar>

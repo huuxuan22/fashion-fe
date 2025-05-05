@@ -35,6 +35,11 @@ import OrderManagement from "./component/OrderManagement.jsx";
 import CreateCoupon from "./component/CreateCoupon.jsx";
 import Transaction from "./component/Transaction.jsx";
 import ProductComment from "./features/ProductComment.jsx";
+import PaymentPage from "./pages/payment-page/PaymentPage.jsx";
+import InvoicePage from "./pages/order-detail/OrderDetailPage.jsx";
+import OrderDetail from "./features/OrderDetail.jsx";
+import OrderDetailPage from "./pages/order-detail/OrderDetailPage.jsx";
+import OrderSuccess from "./component/OrderSuccess.jsx";
 function App() {
   const [showFooter, setShowFooter] = useState(true);
   return (
@@ -46,8 +51,11 @@ function App() {
           {/*shopping Cart  */}
           <Route path="/shopping-cart" element={<ShoppingCart />} />
           <Route path="/search" element={<Search />} />
+          <Route path="/order-success" element={<OrderSuccess />} />
           <Route path="/profile" element={<UserProfile />} />
           <Route path="/comment" element={<ProductComment/>}></Route>
+          <Route path="/payment" element={<PaymentPage />} />
+          <Route path="/order-detail" element={<OrderDetailPage />} />
           
           <Route path="/product-detail" element={<ProductDetail />} />
           <Route path="/product-page" element={<ProductPage />} />

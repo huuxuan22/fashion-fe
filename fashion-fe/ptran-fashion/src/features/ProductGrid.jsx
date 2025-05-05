@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Grid,
   Card,
@@ -10,7 +10,11 @@ import {
   Chip,
   styled
 } from '@mui/material';
-
+import * as productService from './../service/product-service.js';
+import { useNavigate } from 'react-router-dom';
+import * as cartServiceRedux from  "./../redux/Cart/Action.js"
+import { useDispatch } from 'react-redux';
+import SuccessNotification from '../component/SuccessNotification.jsx';
 const products = [
   {
     id: 1,
@@ -139,16 +143,42 @@ const TrendingBadge = styled(Chip)({
   zIndex: 1
 });
 
-const ProductGrid = () => {
+const ProductGrid = ({category}) => { 
+  const [products,setProducts] = useState([]);
+  const token = localStorage.getItem('token');
+  const dispatch = useDispatch();
+  const [open,setOpen] = useState(false);
+  useEffect(() => {
+    loadProducts();
+  },[])
+  const loadProducts = async () => {
+    if (category === 'noibac') {
+      await productService.getProductStandOut({token: token}).then((data) => {
+        setProducts(data.data);
+      })
+    }
+  }
+  const handleAddToCart =async (product) => {
+    const data =  await dispatch(cartServiceRedux.addToCartProduct(token,product));
+    setOpen(true)
+  }
+  const handleClose = () => {
+    setOpen(false);
+  }
+  console.log("Sản phẩm nổi bật của bạn là: ",products);
+  const navigate = useNavigate();
   return (
     <Box sx={{ flexGrow: 1, p: 3 }}>
       <Typography variant="h5" gutterBottom sx={{ fontWeight: 'bold', mb: 3 }}>
         Sản phẩm nổi bật
       </Typography>
       
-      <Grid container spacing={3}>
+      <Grid container spacing={3} >
         {products.map((product) => (
-          <Grid item xs={12} sm={6} md={4} lg={2.4} key={product.id}>
+          <Grid item xs={12} sm={6} md={4} lg={2.4} key={product.productId}  sx={{ cursor: 'pointer' }}
+          onClick = {() => {
+              navigate('/product-detail', {state: {productId: product.productId}});
+          }}>
             <ProductCard>
               <ImageContainer>
                 {product.trending && (
@@ -156,14 +186,15 @@ const ProductGrid = () => {
                 )}
                 <StyledCardMedia
                   component="img"
-                  image={product.image}
-                  alt={product.name}
+                  image={"http://localhost:8080/image/product/"+product.thumbnail
+                  }
+                  alt={product.productName}
                 />
               </ImageContainer>
               
               <CardContent sx={{ flexGrow: 1 }}>
                 <Typography gutterBottom variant="body1" component="div" noWrap>
-                  {product.name}
+                  {product.productName}
                 </Typography>
                 <Typography variant="h6" color="text.primary">
                   {product.price}
@@ -175,6 +206,10 @@ const ProductGrid = () => {
                   variant="contained" 
                   size="small"
                   className="add-to-cart"
+                  onClick={(e) => {
+                    e.stopPropagation(); // Chặn sự kiện click lan lên Grid item
+                    handleAddToCart(product);
+                  }}
                 >
                   Thêm vào giỏ hàng
                 </AddToCartButton>
@@ -183,6 +218,14 @@ const ProductGrid = () => {
           </Grid>
         ))}
       </Grid>
+
+      {open  && (
+        <SuccessNotification 
+          open={open}
+          onClose= {handleClose}
+          message={"Đã thêm vào giỏ hàng"}
+        />
+      )}
     </Box>
   );
 };

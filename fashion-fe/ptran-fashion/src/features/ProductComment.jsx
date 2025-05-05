@@ -395,7 +395,6 @@ const ProductComment = ({ productId, currentUser }) => {
   }
   useEffect(() => {
     console.log("đã đi vào trong này rồi nè");
-    
     loadDataWithRatingOrPage();
     
   },[selectedRating, page]);

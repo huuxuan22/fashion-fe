@@ -39,11 +39,11 @@ const HomePage = () => {
         <DealsSection />
         </div>
         <div className="mb-5">
-          <ProductGrid/>
+          <ProductGrid category = {"noibac"}/>
         </div>
 
         <div className="mb-5">
-          <ProductGrid/>
+          <ProductGrid category = {"noibac"}/>
         </div>
         <Footer></Footer>
       </Box>

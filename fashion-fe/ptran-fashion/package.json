@@ -48,7 +48,9 @@
     "sockjs-client": "^1.6.1",
     "swiper": "^11.1.14",
     "web-vitals": "^2.1.4",
-    "yup": "^1.4.0"
+    "yup": "^1.4.0",
+    "proxy": "https://cors-anywhere.herokuapp.com/https://provinces.open-api.vn"
+
   },
   "scripts": {
     "start": "react-scripts start",

@@ -40,3 +40,313 @@ export const getDiscountProduct =async (data) => {
         }
     }
 }
+
+/**
+ * Tìm kiếm ản phẩm
+ * @param {*} data 
+ * @returns 
+ */
+export const searchProduct =async (data) => {
+    try {
+        const res = await axios.get(`${BASE_API_URL}/admin/product/search?page=${data.page}&size=${data.size}&value=${data.value}`, {
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${data.token}`,
+            }
+        } );
+        console.log("Danh sách sản phẩm giảm giá",res.data);
+        
+        return {success: true, data: res.data}; 
+    } catch (error) {
+        console.log("Lỗi khi createChat :", error);
+        if (error.response) {
+            return {success: false,data: error.response.data}
+        }else {
+            return {success: false, data: "Lỗi ở server vui lòng truy cập lại"}
+        }
+    }
+}
+/**
+ * Lấy tất cả số trang của sản phẩm
+ * @param {*} data 
+ * @returns 
+ */
+export const getAllTotalPage =async (data) => {
+    try {
+        const res = await axios.get(`${BASE_API_URL}/admin/product/totalPage?value=${data.value}`, {
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${data.token}`,
+            }
+        } );
+        console.log("Số trang",res.data);
+        return {success: true, data: res.data}; 
+    } catch (error) {
+        console.log("Lỗi khi createChat :", error);
+        if (error.response) {
+            return {success: false,data: error.response.data}
+        }else {
+            return {success: false, data: "Lỗi ở server vui lòng truy cập lại"}
+        }
+    }
+}
+
+
+/**
+ * Lấy sản phẩm nổi bật
+ * @param {*} data 
+ * @returns 
+ */
+export const getProductStandOut = async (data) => {
+    try {
+        const res = await axios.get(`${BASE_API_URL}/admin/product/standOut`, {
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${data.token}`,
+            }
+        } );
+        console.log("Số trang",res.data);
+        return {success: true, data: res.data}; 
+    } catch (error) {
+        console.log("Lỗi khi createChat :", error);
+        if (error.response) {
+            return {success: false,data: error.response.data}
+        }else {
+            return {success: false, data: "Lỗi ở server vui lòng truy cập lại"}
+        }
+    }
+}
+
+
+/**
+ * Lấy tất cả danh sách ảnh của sản phẩm
+ * @param {*} data 
+ * @returns 
+ */
+export const getAllImageProduct = async (data) => {
+    try {
+        const res = await axios.get(`${BASE_API_URL}/admin/product/image?productId=${data.productId}`, {
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${data.token}`,
+            }
+        } );
+        console.log("Số trang",res.data);
+        return {success: true, data: res.data}; 
+    } catch (error) {
+        console.log("Lỗi khi createChat :", error);
+        if (error.response) {
+            return {success: false,data: error.response.data}
+        }else {
+            return {success: false, data: "Lỗi ở server vui lòng truy cập lại"}
+        }
+    }
+}
+
+
+/**
+ * Lấy chi tiết thông tin của 1 sản phẩm
+ * @param {*} data 
+ * @returns 
+ */
+export const getDetailProduct = async (data) => {
+    try {
+        const res = await axios.get(`${BASE_API_URL}/admin/product/detail?productId=${data.productId}`, {
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${data.token}`,
+            }
+        } );
+        console.log("Số trang",res.data);
+        return {success: true, data: res.data}; 
+    } catch (error) {
+        console.log("Lỗi khi createChat :", error);
+        if (error.response) {
+            return {success: false,data: error.response.data}
+        }else {
+            return {success: false, data: "Lỗi ở server vui lòng truy cập lại"}
+        }
+    }
+}
+
+/**
+ * Lấy Những số lượng sản phẩm đã bán
+ * @param {*} data 
+ * @returns 
+ */
+export const getSolidOfProduct = async (data) => {
+    try {
+        const res = await axios.get(`${BASE_API_URL}/admin/product/solid?productId=${data.productId}`, {
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${data.token}`,
+            }
+        } );
+        console.log("Số trang",res.data);
+        return {success: true, data: res.data}; 
+    } catch (error) {
+        console.log("Lỗi khi createChat :", error);
+        if (error.response) {
+            return {success: false,data: error.response.data}
+        }else {
+            return {success: false, data: "Lỗi ở server vui lòng truy cập lại"}
+        }
+    }
+}
+
+/**
+ * Lấy tất cả size của 1 sản phẩm trong Productvariant
+ * @param {*} data 
+ * @returns 
+ */
+export const getAllSizeOfOneProduct = async (data) => {
+    try {
+        const res = await axios.get(`${BASE_API_URL}/api/size/detail?productId=${data.productId}`, {
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${data.token}`,
+            }
+        } );
+        console.log("Số trang",res.data);
+        return {success: true, data: res.data}; 
+    } catch (error) {
+        console.log("Lỗi khi createChat :", error);
+        if (error.response) {
+            return {success: false,data: error.response.data}
+        }else {
+            return {success: false, data: "Lỗi ở server vui lòng truy cập lại"}
+        }
+    }
+}
+
+/**
+ * Lấy tất cả color của 1 sản phẩm trong Productvariant
+ * @param {*} data 
+ * @returns 
+ */
+export const getAllColorOfOneProduct = async (data) => {
+    try {
+        const res = await axios.get(`${BASE_API_URL}/api/color/detail?productId=${data.productId}`, {
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${data.token}`,
+            }
+        } );
+        console.log("Số trang",res.data);
+        return {success: true, data: res.data}; 
+    } catch (error) {
+        console.log("Lỗi khi createChat :", error);
+        if (error.response) {
+            return {success: false,data: error.response.data}
+        }else {
+            return {success: false, data: "Lỗi ở server vui lòng truy cập lại"}
+        }
+    }
+}
+
+/**
+ * lấy những sản phẩm cofnlaij theo màu sắc khi cái nào hét rồi trả về 0 ddeer hiển thị dữ liệu cho người dugnf xem 
+ * @param {*} data 
+ * @returns 
+ */
+export const countQuanlityWithSizeByColorId = async (data) => {
+    try {
+        const res = await axios.get(`${BASE_API_URL}/api/color/select-color?productId=${data.productId}&colorId=${data.colorId}`, {
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${data.token}`,
+            }
+        } );
+        console.log("Số trang",res.data);
+        return {success: true, data: res.data}; 
+    } catch (error) {
+        console.log("Lỗi khi createChat :", error);
+        if (error.response) {
+            return {success: false,data: error.response.data}
+        }else {
+            return {success: false, data: "Lỗi ở server vui lòng truy cập lại"}
+        }
+    }
+}
+
+
+/**
+ * lấy những sản phẩm tương tự
+ * @param {*} data 
+ * @returns 
+ */
+export const getSameProduct = async (data) => {
+    if (!data.subCategoryId || !data.productId) {
+        return { success: false, data: "Thiếu subCategoryId hoặc productId" };
+    }
+
+    try {
+        const res = await axios.get(`${BASE_API_URL}/admin/product/same?subCategoryId=${data.subCategoryId}&productId=${data.productId}`, {
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${data.token}`,
+            }
+        });
+        console.log("Số trang", res.data);
+        return { success: true, data: res.data };
+    } catch (error) {
+        console.log("Lỗi khi gọi getSameProduct:", error);
+        if (error.response) {
+            return { success: false, data: error.response.data };
+        } else {
+            return { success: false, data: "Lỗi ở server, vui lòng thử lại" };
+        }
+    }
+};
+/**
+ * Lấy tất cả tổng số đánh giá của 1 sản phẩm
+ * @param {*} data 
+ * @returns 
+ */
+export const getAllRatingByProductId = async (data) => {
+    try {
+        const res = await axios.get(`${BASE_API_URL}/admin/product/count?productId=${data.productId}`, {
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${data.token}`,
+            }
+        });
+        console.log("Số trang", res.data);
+        return { success: true, data: res.data };
+    } catch (error) {
+        console.log("Lỗi khi gọi getSameProduct:", error);
+        if (error.response) {
+            return { success: false, data: error.response.data };
+        } else {
+            return { success: false, data: "Lỗi ở server, vui lòng thử lại" };
+        }
+    }
+};
+
+
+/**
+ * Lấy Top deal những sản phẩm cso giá thấp nhất
+ * @param {*} data 
+ * @returns 
+ */
+export const getTopDealProduct = async (data) => {
+    try {
+        const res = await axios.get(`${BASE_API_URL}/admin/product/top-deal`, {
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${data.token}`,
+            }
+        });
+        console.log("Số trang", res.data);
+        return { success: true, data: res.data };
+    } catch (error) {
+        console.log("Lỗi khi gọi getSameProduct:", error);
+        if (error.response) {
+            return { success: false, data: error.response.data };
+        } else {
+            return { success: false, data: "Lỗi ở server, vui lòng thử lại" };
+        }
+    }
+};
+
+
