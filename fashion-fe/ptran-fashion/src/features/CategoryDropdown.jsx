@@ -26,6 +26,9 @@ const CategoryDropdown = ({ categories, onClose }) => {
     loadSubCategory(categoryId);
   };
 
+  console.log(subCategory);
+  
+
   return (
     <Box
       sx={{
@@ -142,7 +145,7 @@ const CategoryDropdown = ({ categories, onClose }) => {
               <Box
                 key={sub.subCategoryId}
                 onClick={() => {
-                  navigate(`/products/sub-category/${sub.subCategoryId}`);
+                  navigate(`/product-page?subcategoryId=${sub.subCategoryId}`,);
                   if (onClose) onClose();
                 }}
                 sx={{

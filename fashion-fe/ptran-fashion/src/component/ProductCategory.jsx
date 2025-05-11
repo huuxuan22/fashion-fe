@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Box, Grid, Typography } from "@mui/material";
 import * as categoriesService from "./../service/category-service";
+import { useNavigate } from "react-router-dom";
 
 
 const ProductCategory = () => {
@@ -16,6 +17,11 @@ const ProductCategory = () => {
     useEffect(() => {
       loadCategory();
     }, []);
+
+    const navigate = useNavigate();
+    const handleSend = (id) => {
+      navigate(`/product-page?categoryId=${id}`)
+    }
   return (
     <Box
   sx={{
@@ -29,9 +35,9 @@ const ProductCategory = () => {
     overflowX: 'auto'   // Nếu màn hình nhỏ quá thì cuộn ngang
   }}
 >
-  {categories?.map((product) => (
+  {categories?.map((cate) => (
     <Box
-      key={product.categorieId}
+      key={cate.categorieId}
       sx={{
         display: 'flex',
         flexDirection: 'column',
@@ -44,20 +50,22 @@ const ProductCategory = () => {
           borderRadius: 1
         }
       }}
+      
     >
       <Box
         component="img"
-        src={product.thumbnail}
-        alt={product.categoriesName}
+        src={cate.thumbnail}
+        alt={cate.categoriesName}
         sx={{
           width: 90,
           height: 90,
           objectFit: 'contain',
           mb: 1
         }}
+        onClick={() => {handleSend(cate.categorieId)}}
       />
       <Typography variant="body2" sx={{ textAlign: 'center', fontWeight: 'medium' }}>
-        {product.categoriesName}
+        {cate.categoriesName}
       </Typography>
     </Box>
   ))}

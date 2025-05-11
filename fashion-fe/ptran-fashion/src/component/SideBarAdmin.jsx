@@ -33,6 +33,9 @@ import {
   Category as CategoryIcon,
   Star as BestSellerIcon,
   ListAlt as AllProductsIcon,
+  Collections as CollectionsIcon,
+  PlaylistAdd as CreateCollectionIcon,
+  ViewList as CollectionListIcon,
 } from "@mui/icons-material";
 
 import BestSeller from "./../features/SellerTable";
@@ -45,11 +48,14 @@ import OrderManagement from "./OrderManagement";
 import Deal from "./Deal";
 import CreateCoupon from "./CreateCoupon.jsx";
 import Transaction from "./Transaction.jsx";
+import CollectionList from "./CollectionList";
+import CreateCollection from "./CreateCollection";
 
 const SideBarAdmin = () => {
   const [selectedComponent, setSelectedComponent] = useState(null);
   const [productsMenuOpen, setProductsMenuOpen] = useState(false);
   const [couponsMenuOpen, setCouponsMenuOpen] = useState(false);
+  const [collectionsMenuOpen, setCollectionsMenuOpen] = useState(false);
   const [orderManagerOpen, setOrderManagerOpen] = useState(false);
   const [openLogoutModal, setOpenLogoutModal] = useState(false);
 
@@ -94,6 +100,10 @@ const SideBarAdmin = () => {
         return <CouponManagement />;
       case "electronicsCategory":
         return <Typography variant="h4">Electronics Category</Typography>;
+      case "collections":
+        return <CollectionList />;
+      case "createCollection":
+        return <CreateCollection />;
       default:
         return <RevenueStatistics />;
     }
@@ -212,6 +222,57 @@ const SideBarAdmin = () => {
                     </ListItemIcon>
                     <ListItemText
                       primary="Add Product"
+                      sx={{ color: "#00917B" }}
+                    />
+                  </ListItemButton>
+                </ListItem>
+              </List>
+            </Collapse>
+
+            {/* Collections with submenu */}
+            <ListItem disablePadding>
+              <ListItemButton
+                onClick={() => setCollectionsMenuOpen(!collectionsMenuOpen)}
+              >
+                <ListItemIcon sx={{ color: "#00917B" }}>
+                  <CollectionsIcon />
+                </ListItemIcon>
+                <ListItemText primary="Collections" sx={{ color: "#00917B" }} />
+                {collectionsMenuOpen ? (
+                  <ExpandLess sx={{ color: "#00917B" }} />
+                ) : (
+                  <ExpandMore sx={{ color: "#00917B" }} />
+                )}
+              </ListItemButton>
+            </ListItem>
+
+            <Collapse in={collectionsMenuOpen} timeout="auto" unmountOnExit>
+              <List component="div" disablePadding>
+                <ListItem disablePadding>
+                  <ListItemButton
+                    onClick={() => setSelectedComponent("collections")}
+                    sx={{ pl: 4 }}
+                  >
+                    <ListItemIcon sx={{ color: "#00917B" }}>
+                      <CollectionListIcon />
+                    </ListItemIcon>
+                    <ListItemText
+                      primary="Collection List"
+                      sx={{ color: "#00917B" }}
+                    />
+                  </ListItemButton>
+                </ListItem>
+
+                <ListItem disablePadding>
+                  <ListItemButton
+                    onClick={() => setSelectedComponent("createCollection")}
+                    sx={{ pl: 4 }}
+                  >
+                    <ListItemIcon sx={{ color: "#00917B" }}>
+                      <CreateCollectionIcon />
+                    </ListItemIcon>
+                    <ListItemText
+                      primary="Create Collection"
                       sx={{ color: "#00917B" }}
                     />
                   </ListItemButton>

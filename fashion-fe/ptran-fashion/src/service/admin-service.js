@@ -187,3 +187,215 @@ export const deleteDeal =async (dealId,token) => {
     }
 }
 
+/**
+ * Cập nhật deal
+ * @param {*} data 
+ * @returns 
+ */
+export const createCoupon =async (formData,token) => {
+    try {
+        console.log("dữ liệu: ",formData);
+        
+        const res = await axios.post(`${BASE_API_URL}/api/admin/coupon/create`,formData,{
+            headers: {
+                "Content-Type": "multipart/form-data",
+                Authorization: `Bearer ${token}`,
+            }
+        } );
+        console.log("Danh sách sản phẩm giảm giá",res.data);
+        
+        return {success: true, data: res.data}; 
+    } catch (error) {
+        console.log("Lỗi khi createChat :", error);
+        if (error.response) {
+            return {success: false,data: error.response.data}
+        }else {
+            return {success: false, data: "Lỗi ở server vui lòng truy cập lại"}
+        }
+    }
+}
+
+
+export const getAllCoupon =async (size,page,token) => {
+    try {
+        const res = await axios.get(`${BASE_API_URL}/api/admin/coupon/get-all?size=${size}&page=${page}`,{
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${token}`,
+            }
+        } );
+        console.log("Danh sách sản phẩm giảm giá",res.data);
+        
+        return {success: true, data: res.data.content}; 
+    } catch (error) {
+        console.log("Lỗi khi createChat :", error);
+        if (error.response) {
+            return {success: false,data: error.response.data}
+        }else {
+            return {success: false, data: "Lỗi ở server vui lòng truy cập lại"}
+        }
+    }
+}
+
+
+/**
+ * Lấy toàn bộ DEAL
+ * @param {*} data 
+ * @returns 
+ */
+export const getAllPageOfCoupon =async (token) => {
+    try {
+        const res = await axios.get(`${BASE_API_URL}/api/admin/coupon/page`,{
+            headers: {
+                "Content-Type": "multipart/form-data",
+                Authorization: `Bearer ${token}`,
+            }
+        } );
+        console.log("Danh sách sản phẩm giảm giá",res.data);
+        
+        return {success: true, data: res.data}; 
+    } catch (error) {
+        console.log("Lỗi khi createChat :", error);
+        if (error.response) {
+            return {success: false,data: error.response.data}
+        }else {
+            return {success: false, data: "Lỗi ở server vui lòng truy cập lại"}
+        }
+    }
+}
+
+/**
+ * Cập nhật deal
+ * @param {*} data 
+ * @returns 
+ */
+export const deleteCoupon =async (couponId,token) => {
+    try {
+        const res = await axios.delete(`${BASE_API_URL}/api/admin/coupon?couponId=${couponId}`,{
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${token}`,
+            }
+        } );
+        console.log("Danh sách sản phẩm giảm giá",res.data);
+        
+        return {success: true, data: res.data}; 
+    } catch (error) {
+        console.log("Lỗi khi createChat :", error);
+        if (error.response) {
+            return {success: false,data: error.response.data}
+        }else {
+            return {success: false, data: "Lỗi ở server vui lòng truy cập lại"}
+        }
+    }
+}
+
+
+/**
+ * Tìm kiếm ản phẩm
+ * @param {*} data 
+ * @returns 
+ */
+export const createCollection =async (formData,token) => {
+    try {
+        const res = await axios.post(`${BASE_API_URL}/api/users/create-collection`, formData,{
+            headers: {
+                "Content-Type": "multipart/form-data",
+                Authorization: `Bearer ${token}`,
+            }
+        } );
+        console.log("Danh sách sản phẩm giảm giá",res.data);
+        
+        return {success: true, data: res.data}; 
+    } catch (error) {
+        console.log("Lỗi khi createChat :", error);
+        if (error.response) {
+            return {success: false,data: error.response.data}
+        }else {
+            return {success: false, data: "Lỗi ở server vui lòng truy cập lại"}
+        }
+    }
+}
+
+
+
+/**
+ * Tìm kiếm ản phẩm
+ * @param {*} data 
+ * @returns 
+ */
+export const getAllCollection =async (token) => {
+    try {
+        const res = await axios.get(`${BASE_API_URL}/api/users/get-all-collection`,{
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${token}`,
+            }
+        } );
+        console.log("Danh sách sản phẩm giảm giá",res.data);
+        
+        return {success: true, data: res.data}; 
+    } catch (error) {
+        console.log("Lỗi khi createChat :", error);
+        if (error.response) {
+            return {success: false,data: error.response.data}
+        }else {
+            return {success: false, data: "Lỗi ở server vui lòng truy cập lại"}
+        }
+    }
+}
+
+
+/**
+ * Tìm kiếm ản phẩm
+ * @param {*} data 
+ * @returns 
+ */
+export const getFirstCollection =async (token) => {
+    try {
+        const res = await axios.get(`${BASE_API_URL}/api/users/collection/first`,{
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${token}`,
+            }
+        } );
+        console.log("Danh sách sản phẩm giảm giá",res.data);
+        
+        return {success: true, data: res.data}; 
+    } catch (error) {
+        console.log("Lỗi khi createChat :", error);
+        if (error.response) {
+            return {success: false,data: error.response.data}
+        }else {
+            return {success: false, data: "Lỗi ở server vui lòng truy cập lại"}
+        }
+    }
+}
+
+
+/**
+ * Tìm kiếm ản phẩm
+ * @param {*} data 
+ * @returns 
+ */
+export const getSecondCollection =async (token) => {
+    try {
+        const res = await axios.get(`${BASE_API_URL}/api/users/collection/second`,{
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${token}`,
+            }
+        } );
+        console.log("Danh sách sản phẩm giảm giá",res.data);
+        
+        return {success: true, data: res.data}; 
+    } catch (error) {
+        console.log("Lỗi khi createChat :", error);
+        if (error.response) {
+            return {success: false,data: error.response.data}
+        }else {
+            return {success: false, data: "Lỗi ở server vui lòng truy cập lại"}
+        }
+    }
+}
+

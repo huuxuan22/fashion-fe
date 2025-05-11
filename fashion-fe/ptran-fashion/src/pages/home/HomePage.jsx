@@ -9,6 +9,7 @@ import FashionGallery from "../../component/FashionGallery";
 import ProductGrid from "../../features/ProductGrid";
 import Promotion from "../../features/Promotion";
 import DashboardLayout from "../../features/DoarchBarLayout";
+import LuxuryFashionGallery from "../../features/LuxuryFashionGallery";
 
 const HomePage = () => {
     const [showFooter, setShowFooter] = useState(true);
@@ -39,11 +40,14 @@ const HomePage = () => {
         <DealsSection />
         </div>
         <div className="mb-5">
-          <ProductGrid category = {"noibac"}/>
+          <LuxuryFashionGallery/>
+        </div>
+        <div className="mb-5">
+          <ProductGrid category = {"nam"}/>
         </div>
 
         <div className="mb-5">
-          <ProductGrid category = {"noibac"}/>
+          <ProductGrid category = {"nu"}/>
         </div>
         <Footer></Footer>
       </Box>

@@ -40,6 +40,11 @@ import InvoicePage from "./pages/order-detail/OrderDetailPage.jsx";
 import OrderDetail from "./features/OrderDetail.jsx";
 import OrderDetailPage from "./pages/order-detail/OrderDetailPage.jsx";
 import OrderSuccess from "./component/OrderSuccess.jsx";
+import Introduce from "./pages/Introduce/Introduce.jsx";
+import Contact from "./pages/contact/Contact.jsx";
+import CouponDetailPage from "./pages/coupoun-detail/CouponDetail.jsx";
+import CreateCollectionPage from "./component/CreateCollection.jsx";
+import CollectionDetail from "./pages/collection-detail/CollectionDetail.jsx";
 function App() {
   const [showFooter, setShowFooter] = useState(true);
   return (
@@ -48,9 +53,14 @@ function App() {
         <Routes>
           <Route path="/login" element={<Login />} />
           <Route path="/" element={<HomePage />}></Route>
+          <Route path="/coupon-detail" element={<CouponDetailPage />}></Route>
+          <Route path="/collection-detail" element={<CollectionDetail />}></Route>
+          <Route path="/create-collection" element={<CreateCollectionPage />}></Route>
           {/*shopping Cart  */}
           <Route path="/shopping-cart" element={<ShoppingCart />} />
           <Route path="/search" element={<Search />} />
+          <Route path="/introduce" element={<Introduce />} />
+          <Route path="/contact" element={<Contact />} />
           <Route path="/order-success" element={<OrderSuccess />} />
           <Route path="/profile" element={<UserProfile />} />
           <Route path="/comment" element={<ProductComment/>}></Route>

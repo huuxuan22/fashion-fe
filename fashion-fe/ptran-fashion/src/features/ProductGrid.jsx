@@ -152,8 +152,14 @@ const ProductGrid = ({category}) => {
     loadProducts();
   },[])
   const loadProducts = async () => {
-    if (category === 'noibac') {
-      await productService.getProductStandOut({token: token}).then((data) => {
+    if (category === 'nam') {
+      await productService.getProductStandOutNam({token: token}).then((data) => {
+        setProducts(data.data);
+      })
+    }
+
+    if (category === 'nu') {
+      await productService.getProductStandOutNu({token: token}).then((data) => {
         setProducts(data.data);
       })
     }
@@ -165,12 +171,11 @@ const ProductGrid = ({category}) => {
   const handleClose = () => {
     setOpen(false);
   }
-  console.log("Sản phẩm nổi bật của bạn là: ",products);
   const navigate = useNavigate();
   return (
     <Box sx={{ flexGrow: 1, p: 3 }}>
       <Typography variant="h5" gutterBottom sx={{ fontWeight: 'bold', mb: 3 }}>
-        Sản phẩm nổi bật
+        
       </Typography>
       
       <Grid container spacing={3} >
@@ -197,7 +202,7 @@ const ProductGrid = ({category}) => {
                   {product.productName}
                 </Typography>
                 <Typography variant="h6" color="text.primary">
-                  {product.price}
+                  {product.price} vnđ
                 </Typography>
               </CardContent>
               
@@ -231,3 +236,7 @@ const ProductGrid = ({category}) => {
 };
 
 export default ProductGrid;
+
+
+
+

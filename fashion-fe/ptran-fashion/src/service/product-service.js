@@ -97,9 +97,33 @@ export const getAllTotalPage =async (data) => {
  * @param {*} data 
  * @returns 
  */
-export const getProductStandOut = async (data) => {
+export const getProductStandOutNam = async (data) => {
     try {
-        const res = await axios.get(`${BASE_API_URL}/admin/product/standOut`, {
+        const res = await axios.get(`${BASE_API_URL}/admin/product/standOut-nam`, {
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${data.token}`,
+            }
+        } );
+        console.log("Số trang",res.data);
+        return {success: true, data: res.data}; 
+    } catch (error) {
+        console.log("Lỗi khi createChat :", error);
+        if (error.response) {
+            return {success: false,data: error.response.data}
+        }else {
+            return {success: false, data: "Lỗi ở server vui lòng truy cập lại"}
+        }
+    }
+}
+/**
+ * Lấy sản phẩm nổi bật
+ * @param {*} data 
+ * @returns 
+ */
+export const getProductStandOutNu = async (data) => {
+    try {
+        const res = await axios.get(`${BASE_API_URL}/admin/product/standOut-nu`, {
             headers: {
                 "Content-Type": "application/json",
                 Authorization: `Bearer ${data.token}`,
@@ -323,7 +347,6 @@ export const getAllRatingByProductId = async (data) => {
     }
 };
 
-
 /**
  * Lấy Top deal những sản phẩm cso giá thấp nhất
  * @param {*} data 
@@ -350,3 +373,79 @@ export const getTopDealProduct = async (data) => {
 };
 
 
+/**
+ * Lấy Top deal những sản phẩm cso giá thấp nhất
+ * @param {*} data 
+ * @returns 
+ */
+export const getProductWithCategories = async (data) => {
+    try {
+        const res = await axios.get(`${BASE_API_URL}/admin/product/category`, {
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${data.token}`,
+            }
+        });
+        console.log("Số trang", res.data);
+        return { success: true, data: res.data };
+    } catch (error) {
+        console.log("Lỗi khi gọi getSameProduct:", error);
+        if (error.response) {
+            return { success: false, data: error.response.data };
+        } else {
+            return { success: false, data: "Lỗi ở server, vui lòng thử lại" };
+        }
+    }
+};
+
+
+/**
+ * trang product-page tìm kiếm sản phẩm
+ */
+export const selectProductByfeature = async (data) => {
+    try {
+        console.log("dữ liệu trước khi vào be: ", data);
+        
+        const res = await axios.get(`${BASE_API_URL}/api/users/find-product?categoryId=${data.categoryId !== null?data.categoryId : ""}&subCategoryId=${data.subCategoryId !== null ? data.subCategoryId : ""}&colorId=${data.colorId!==null ? data.colorId : ""}&sizeId=${data.sizeId!==null ? data.sizeId : ""}&sortBy=${data.sortBy!== null ? data.sortBy : ""}&size=${data.size}&page=${data.page}`, {
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${data.token}`,
+            }
+        });
+        console.log("Số trang", res.data.content);
+        return { success: true, data: res.data.content };
+    } catch (error) {
+        console.log("Lỗi khi gọi getSameProduct:", error);
+        if (error.response) {
+            return { success: false, data: error.response.data };
+        } else {
+            return { success: false, data: "Lỗi ở server, vui lòng thử lại" };
+        }
+    }
+};
+
+
+/**
+ * lấy tổng số trang theo những đặc điểm chọn 
+ */
+export const getPages = async (data) => {
+    try {
+        console.log("dữ liệu số trang: ",data);
+        
+        const res = await axios.get(`${BASE_API_URL}/api/users/count-all-product?categoryId=${data.categoryId !== null ?data.categoryId : "" }&subCategoryId=${data.subCategoryId !== null ? data.subCategoryId : ""}&colorId=${data.colorId !== null ? data.colorId : ""}&sizeId=${data.sizeId !== null ? data.sizeId : "" }`, {
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${data.token}`,
+            }
+        });
+        console.log("Số trang", res.data);
+        return { success: true, data: res.data };
+    } catch (error) {
+        console.log("Lỗi khi gọi getSameProduct:", error);
+        if (error.response) {
+            return { success: false, data: error.response.data };
+        } else {
+            return { success: false, data: "Lỗi ở server, vui lòng thử lại" };
+        }
+    }
+};

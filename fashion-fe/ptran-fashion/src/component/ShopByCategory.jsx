@@ -1,76 +1,71 @@
-import React from "react";
-import { Grid, Card, CardMedia } from "@mui/material";
-
-const imageData = [
-  {
-    id: 1,
-    src: "https://th.bing.com/th/id/OIP.jD1UnRvsAL8PdCKEQZFOtgHaIB?rs=1&pid=ImgDetMain",
-  },
-  {
-    id: 2,
-    src: "https://th.bing.com/th/id/OIP.jD1UnRvsAL8PdCKEQZFOtgHaIB?rs=1&pid=ImgDetMain",
-  },
-  {
-    id: 3,
-    src: "https://th.bing.com/th/id/OIP.jD1UnRvsAL8PdCKEQZFOtgHaIB?rs=1&pid=ImgDetMain",
-  },
-  {
-    id: 4,
-    src: "https://th.bing.com/th/id/OIP.jD1UnRvsAL8PdCKEQZFOtgHaIB?rs=1&pid=ImgDetMain",
-  },
-  {
-    id: 5,
-    src: "https://th.bing.com/th/id/OIP.jD1UnRvsAL8PdCKEQZFOtgHaIB?rs=1&pid=ImgDetMain",
-  },
-  {
-    id: 6,
-    src: "https://th.bing.com/th/id/OIP.jD1UnRvsAL8PdCKEQZFOtgHaIB?rs=1&pid=ImgDetMain",
-  },
-  {
-    id: 7,
-    src: "https://th.bing.com/th/id/OIP.jD1UnRvsAL8PdCKEQZFOtgHaIB?rs=1&pid=ImgDetMain",
-  },
-  {
-    id: 8,
-    src: "https://th.bing.com/th/id/OIP.jD1UnRvsAL8PdCKEQZFOtgHaIB?rs=1&pid=ImgDetMain",
-  },
-  {
-    id: 9,
-    src: "https://th.bing.com/th/id/OIP.jD1UnRvsAL8PdCKEQZFOtgHaIB?rs=1&pid=ImgDetMain",
-  },
-  {
-    id: 10,
-    src: "https://th.bing.com/th/id/OIP.jD1UnRvsAL8PdCKEQZFOtgHaIB?rs=1&pid=ImgDetMain",
-  },
-];
+import React, { useEffect, useState } from "react";
+import { Grid, Card, CardMedia, Typography, Box } from "@mui/material";
+import * as productService from "./../service/product-service";
+import { useNavigate } from "react-router-dom";
 
 const ShopByCategory = () => {
+  const [products, setProducts] = useState([]);
+  const token = localStorage.getItem("token");
+
+  const loadData = async () => {
+    try {
+      const response = await productService.getProductWithCategories({ token });
+      // Lấy 14 sản phẩm đầu tiên (hoặc có thể điều chỉnh theo API)
+      setProducts(response.data.slice(0, 14));
+    } catch (error) {
+      console.error("Error loading products:", error);
+    }
+  };
+
+  useEffect(() => {
+    loadData();
+  }, []);
+
+  const navigate = useNavigate()
+  const handleProduct = (id) => {
+    navigate('/product-detail', {state: {productId: id}})
+  }
   return (
-    <div
-      style={{
-        width: "calc(100% - 200px)",
-        margin: "0 100px",
-        padding: "24px 0",
+    <Box
+      sx={{
+        width: "100%",
+        maxWidth: "2900px", // Giới hạn chiều rộng tối đa
+        margin: "0 auto",
+        padding: { xs: "24px 16px", md: "24px 50px" },
       }}
     >
-      <Grid container spacing={7}>
-        {imageData.map((item) => (
-          <Grid item xs={12} sm={2.4} key={item.id}>
+
+      <Grid container spacing={{ xs: 2, sm: 3, md: 4 }}>
+        {products.map((item) => (
+          <Grid 
+            item 
+            xs={6}  // 2 cột trên mobile
+            sm={3}   // 4 cột trên tablet nhỏ
+            md={2}   // 6 cột trên tablet lớn
+            lg={1.7} // ~7 cột trên desktop
+            key={item.productId || item.id}
+            sx={{
+              display: "flex",
+              justifyContent: "center",
+              cursor:'pointer'
+            }}
+            onClick={() => handleProduct(item.productId)}
+          >
             <Card
               sx={{
-                height: "100%",
-                display: "flex",
-                flexDirection: "column",
-                borderRadius: "50%",
+                width: "100%",
+                maxWidth: "400px", // Giới hạn kích thước tối đa
+                height: "auto",
                 aspectRatio: "1/1",
-                border: "3px solid #008B76", // Đường viền màu #008B76
-                boxShadow: "0 0 0 4px rgba(0, 139, 118, 0.3)", // Hiệu ứng shadow bên ngoài
-                transition: "all 0.3s ease", // Hiệu ứng chuyển động mượt
+                borderRadius: "50%",
+                border: "3px solid #008B76",
+                boxShadow: "0 0 0 4px rgba(0, 139, 118, 0.3)",
+                transition: "all 0.3s ease",
+                padding: "4px",
                 "&:hover": {
-                  transform: "scale(1.05)", // Phóng to nhẹ khi hover
-                  boxShadow: "0 0 0 6px rgba(0, 139, 118, 0.4)", // Tăng shadow khi hover
+                  transform: "scale(1.05)",
+                  boxShadow: "0 0 0 6px rgba(0, 139, 118, 0.4)",
                 },
-                padding: "4px", // Khoảng cách giữa viền và ảnh
               }}
             >
               <CardMedia
@@ -81,14 +76,27 @@ const ShopByCategory = () => {
                   objectFit: "cover",
                   borderRadius: "50%",
                 }}
-                image={item.src}
-                alt={`Fashion ${item.id}`}
+                image={"http://localhost:8080/image/product/" + item.thumbnail}
+                alt={item.productName || `Sản phẩm ${item.productId}`}
               />
             </Card>
+            {item.categoryName && (
+              <Typography 
+                variant="subtitle2" 
+                sx={{
+                  textAlign: "center",
+                  mt: 1,
+                  fontWeight: "500",
+                  color: "#333"
+                }}
+              >
+                {item.categoryName}
+              </Typography>
+            )}
           </Grid>
         ))}
       </Grid>
-    </div>
+    </Box>
   );
 };
 

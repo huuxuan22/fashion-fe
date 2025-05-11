@@ -2,15 +2,7 @@ import React, { useState, useEffect } from "react";
 import {
   TextField,
   Button,
-  MenuItem,
-  Select,
-  FormControl,
-  InputLabel,
   Box,
-  Radio,
-  RadioGroup,
-  FormControlLabel,
-  FormLabel,
   Grid,
   Avatar,
   IconButton,
@@ -28,6 +20,7 @@ import { keyframes } from "@emotion/react";
 import * as productService from "./../service/product-service";
 import * as adminService from "./../service/admin-service";
 import SuccessNotification from './SuccessNotification';
+
 // Hiệu ứng rung khi validate lỗi
 const shake = keyframes`
   0%, 100% { transform: translateX(0); }
@@ -35,14 +28,13 @@ const shake = keyframes`
   20%, 40%, 60%, 80% { transform: translateX(5px); }
 `;
 
-const CreateDeal = () => {
+const CreateCollectionPage = () => {
   // State chính
-  const [discountPercent, setDiscountPercent] = useState("");
-  const [dealPrice, setDealPrice] = useState("");
-  const [priceOption, setPriceOption] = useState("percent");
+  const [name, setName] = useState("");
+  const [description, setDescription] = useState("");
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
-  const [imageFile, setImageFile] = useState(null); // Thay thế const [image, setImage]
+  const [imageFile, setImageFile] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedProducts, setSelectedProducts] = useState([]);
   const [searchResults, setSearchResults] = useState([]);
@@ -50,7 +42,8 @@ const CreateDeal = () => {
   const [shake, setShake] = useState(false);
   const [products, setProducts] = useState([]);
   const token = localStorage.getItem("token");
-  const [open,setOpen] = useState(false);
+  const [open, setOpen] = useState(false);
+
   const loadData = async () => {
     await adminService
       .searchProduct({ token: token, searchTerm: searchTerm })
@@ -58,9 +51,10 @@ const CreateDeal = () => {
         setProducts(data.data);
       });
   };
+
   const onClose = () => {
-    setOpen(false)
-  }
+    setOpen(false);
+  };
 
   // Hiệu ứng rung khi có lỗi
   useEffect(() => {
@@ -69,12 +63,15 @@ const CreateDeal = () => {
       return () => clearTimeout(timer);
     }
   }, [shake]);
+
   useEffect(() => {
     setProducts([]);
   }, []);
+
   useEffect(() => {
     loadData();
   }, [searchTerm]);
+
   // Tìm kiếm sản phẩm
   const handleSearch = () => {
     if (searchTerm.trim() === "") {
@@ -107,27 +104,15 @@ const CreateDeal = () => {
       return;
     }
   
-    setImageFile(file); // Lưu file nếu hợp lệ
+    setImageFile(file);
   };
-  
 
   // Validate form
   const validateForm = () => {
     const newErrors = {};
 
-    if (priceOption === "percent" && !discountPercent) {
-      newErrors.discountPercent = "Vui lòng nhập phần trăm giảm giá";
-    } else if (
-      priceOption === "percent" &&
-      (discountPercent <= 0 || discountPercent > 100)
-    ) {
-      newErrors.discountPercent = "Phần trăm giảm giá phải từ 1-100";
-    }
-    if (priceOption === "price" && !dealPrice) {
-      newErrors.dealPrice = "Vui lòng nhập giá deal";
-    } else if (priceOption === "price" && dealPrice <= 0) {
-      newErrors.dealPrice = "Giá deal phải lớn hơn 0";
-    }
+    if (!name) newErrors.name = "Vui lòng nhập tên bộ sưu tập";
+    if (!description) newErrors.description = "Vui lòng nhập mô tả";
     if (!startDate) newErrors.startDate = "Vui lòng chọn ngày bắt đầu";
     if (!endDate) newErrors.endDate = "Vui lòng chọn ngày kết thúc";
     if (startDate && endDate && startDate > endDate) {
@@ -149,37 +134,32 @@ const CreateDeal = () => {
   const handleSubmit = async (event) => {
     event.preventDefault();
     const productIds = selectedProducts
-      .filter((p) => p.productId) // Bỏ qua sản phẩm không có ID
+      .filter((p) => p.productId)
       .map((p) => p.productId);
+      
     if (validateForm()) {
       const formData = new FormData();
       if (imageFile) {
-        console.log("vào đây r nahs");
-        
         formData.append("imageUrl", imageFile);
       }
-      const start = new Date(startDate).toISOString(); // Trả về dạng "2025-05-09T00:00:00.000Z"
+      const start = new Date(startDate).toISOString();
       const end = new Date(endDate).toISOString();
-      formData.append("discountPercent", discountPercent);
-      formData.append("dealPrice", dealPrice);
-      formData.append("startTime", start);
-      formData.append("endTime", end);
-      productIds.forEach((id) => formData.append("product", id)); // từng id
+      
+      formData.append("name", name);
+      formData.append("description", description);
+      formData.append("startDate", start);
+      formData.append("endDate", end);
+      productIds.forEach((id) => formData.append("product", id));
 
-
-
-      console.log("FormData to be sent:", discountPercent);
-      console.log(dealPrice);
-        
-      await adminService.creaeDeal(formData, token).then(() => {
+      await adminService.createCollection(formData, token).then(() => {
         setOpen(true);
-        // setImageFile(null);
-        // setSearchTerm("");
-        // setDiscountPercent("");
-        // setDealPrice("");
-        // setStartDate("");
-        // setEndDate("");
-        // setSelectedProducts([])
+        setImageFile(null);
+        setSearchTerm("");
+        setName("");
+        setDescription("");
+        setStartDate("");
+        setEndDate("");
+        setSelectedProducts([]);
       });
     }
   };
@@ -193,68 +173,39 @@ const CreateDeal = () => {
         animation: shake ? `${shake} 0.5s ease-in-out` : "none",
       }}
     >
-      <h2 style={{ color: "#008772", textAlign: "center" }}>Create Deal</h2>
       <form onSubmit={handleSubmit}>
         <Grid container spacing={3}>
-          {/* Discount Options */}
+          {/* Name and Description */}
           <Grid item xs={12}>
-            <FormControl component="fieldset">
-              <FormLabel component="legend">Discount Option</FormLabel>
-              <RadioGroup
-                row
-                value={priceOption}
-                onChange={(e) => setPriceOption(e.target.value)}
-              >
-                <FormControlLabel
-                  value="percent"
-                  control={<Radio />}
-                  label="Discount Percent"
-                />
-                <FormControlLabel
-                  value="price"
-                  control={<Radio />}
-                  label="Deal Price"
-                />
-              </RadioGroup>
-            </FormControl>
+            <TextField
+              fullWidth
+              label="Tên bộ sưu tập"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              error={!!errors.name}
+              helperText={errors.name}
+            />
           </Grid>
 
-          {priceOption === "percent" ? (
-            <Grid item xs={12}>
-              <TextField
-                fullWidth
-                type="number"
-                label="Discount Percent"
-                value={discountPercent}
-                onChange={(e) => setDiscountPercent(e.target.value)}
-                error={!!errors.discountPercent}
-                helperText={errors.discountPercent}
-                InputProps={{
-                  endAdornment: "%",
-                }}
-              />
-            </Grid>
-          ) : (
-            <Grid item xs={12}>
-              <TextField
-                fullWidth
-                type="number"
-                label="Deal Price"
-                value={dealPrice}
-                onChange={(e) => setDealPrice(e.target.value)}
-                error={!!errors.dealPrice}
-                helperText={errors.dealPrice}
-                placeholder="VD: 100.000VNĐ"
-              />
-            </Grid>
-          )}
+          <Grid item xs={12}>
+            <TextField
+              fullWidth
+              label="Mô tả"
+              multiline
+              rows={4}
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              error={!!errors.description}
+              helperText={errors.description}
+            />
+          </Grid>
 
           {/* Date Range */}
           <Grid item xs={12} md={6}>
             <TextField
               fullWidth
               type="date"
-              label="Start Date"
+              label="Ngày bắt đầu"
               InputLabelProps={{ shrink: true }}
               value={startDate}
               onChange={(e) => setStartDate(e.target.value)}
@@ -266,7 +217,7 @@ const CreateDeal = () => {
             <TextField
               fullWidth
               type="date"
-              label="End Date"
+              label="Ngày kết thúc"
               InputLabelProps={{ shrink: true }}
               value={endDate}
               onChange={(e) => setEndDate(e.target.value)}
@@ -293,14 +244,14 @@ const CreateDeal = () => {
               </IconButton>
               {imageFile ? (
                 <Avatar
-                  src={URL.createObjectURL(imageFile)} // Tạo URL tạm từ file
-                  alt="Deal Preview"
+                  src={URL.createObjectURL(imageFile)}
+                  alt="Collection Preview"
                   sx={{ width: 100, height: 100 }}
                   variant="rounded"
                 />
               ) : (
                 <Typography variant="body2" color="textSecondary">
-                  Tải lên ảnh deal (không bắt buộc)
+                  Tải lên ảnh bộ sưu tập
                 </Typography>
               )}
             </Box>
@@ -311,7 +262,7 @@ const CreateDeal = () => {
             <Box sx={{ display: "flex", alignItems: "center" }}>
               <TextField
                 fullWidth
-                label="Search Products"
+                label="Tìm kiếm sản phẩm"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 onKeyPress={(e) => e.key === "Enter" && handleSearch()}
@@ -367,7 +318,7 @@ const CreateDeal = () => {
           {selectedProducts.length > 0 && (
             <Grid item xs={12}>
               <Box>
-                <Typography variant="h6">Selected Products:</Typography>
+                <Typography variant="h6">Sản phẩm đã chọn:</Typography>
                 <List dense>
                   {selectedProducts.map((product) => (
                     <ListItem key={product.productId}>
@@ -405,18 +356,20 @@ const CreateDeal = () => {
                 "&:hover": { backgroundColor: "#006a5d" },
               }}
             >
-              Submit
+              Tạo Bộ Sưu Tập
             </Button>
           </Grid>
         </Grid>
       </form>
-      {open && (<SuccessNotification 
-        open ={open}
-        onClose={onClose}
-        message={"Them deal thanh cong"}
-      />)}
+      {open && (
+        <SuccessNotification 
+          open={open}
+          onClose={onClose}
+          message={"Tạo bộ sưu tập thành công"}
+        />
+      )}
     </Box>
   );
 };
 
-export default CreateDeal;
+export default CreateCollectionPage;

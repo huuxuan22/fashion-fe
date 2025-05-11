@@ -20,34 +20,32 @@ import SearchIcon from "@mui/icons-material/Search";
 import { FaTruck } from "react-icons/fa";
 import * as categoryService from "./../service/category-service";
 import { useDispatch, useSelector } from "react-redux";
-import * as cartServiceRedux from "./../redux/Cart/Action"
-import * as userServiceRedux from "./../redux/User/Action"
+import * as cartServiceRedux from "./../redux/Cart/Action";
+import * as userServiceRedux from "./../redux/User/Action";
 import NotificationDropdown from "../component/NotificationDropdown";
 const Header = () => {
   const navigate = useNavigate();
   const [anchorEl, setAnchorEl] = useState(null);
   const [activeCategory, setActiveCategory] = useState(null);
-  const [categories,setCategories] = useState([]);
+  const [categories, setCategories] = useState([]);
   const token = localStorage.getItem("token");
   const dispatch = useDispatch();
   const loadData = async () => {
-      await dispatch(cartServiceRedux.getAllCart(token));
-      await dispatch(userServiceRedux.currentUser(token));
-    };
-  const loadCategories =async () => {
+    await dispatch(cartServiceRedux.getAllCart(token));
+    await dispatch(userServiceRedux.currentUser(token));
+  };
+  const loadCategories = async () => {
     await categoryService.getAllCategory(token).then((data) => {
       setCategories(data.data);
-    })
+    });
   };
-  const {carts,users} = useSelector((store) => store);
+  const { carts, users } = useSelector((store) => store);
 
-  
   useEffect(() => {
     loadCategories();
     loadData();
-  },[]);
-  console.log("tôi đang ở header và danh sách categories: ", categories);
-  
+  }, []);
+
   const handleCategoryEnter = (category, event) => {
     if (category === "Product") {
       setActiveCategory(category);
@@ -74,11 +72,23 @@ const Header = () => {
   const handleProfile = () => {
     navigate("/profile");
   };
+  const handleIntroduce = () => {
+    navigate('/introduce')
+  }
+  const handleContact = () => {
+    navigate('/contact')
+  }
   return (
     <>
       <AppBar
-        position="static"
-        sx={{ background: "white", boxShadow: 1, px: 2 }}
+        position="sticky" // Thay đổi từ "static" sang "sticky"
+        sx={{
+          background: "white",
+          boxShadow: 1,
+          px: 2,
+          top: 0, // Cần thiết cho sticky
+          zIndex: (theme) => theme.zIndex.drawer + 1, // Đảm bảo nổi lên trên các thành phần khác
+        }}
       >
         <Toolbar
           sx={{
@@ -93,7 +103,7 @@ const Header = () => {
             sx={{ fontFamily: "cursive", color: "#388e3c", cursor: "pointer" }}
             onClick={() => handleHomepage()}
           >
-            Zosh Bazaar
+            PTRAN_FASHION
           </Typography>
 
           {/* Menu Items */}
@@ -149,6 +159,7 @@ const Header = () => {
                 },
                 transition: "all 0.3s ease",
               }}
+              onClick={ () => handleIntroduce()}
             >
               Introduction
             </Button>
@@ -172,6 +183,7 @@ const Header = () => {
                 },
                 transition: "all 0.3s ease",
               }}
+              onClick={() => {handleContact()}}
             >
               Contact
             </Button>
