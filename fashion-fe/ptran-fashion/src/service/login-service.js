@@ -69,3 +69,31 @@ export const sendCodeAgain = async (email) => {
         }
     }
 }
+
+
+/**
+ * Lấy được mã giảm giá khi thanh toán 
+
+ */
+export const logOut = async (token) => {
+    try {
+        
+        const res = await axios.post(
+            `${BASE_API_URL}/api/logout`,
+            {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                    "Content-Type": "application/json",
+                },
+            }
+        );
+        return { success: true, data: res.data };
+    } catch (error) {
+        if (error.response) {
+            console.log(error.response.data);
+            return { success: false, data: error.response.data };
+        } else {
+            return { success: false, data: "Lỗi máy chủ, vui lòng thử lại!" };
+        }
+    }
+};

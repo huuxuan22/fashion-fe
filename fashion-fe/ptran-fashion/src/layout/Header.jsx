@@ -230,7 +230,7 @@ const Header = () => {
               onClick={() => handleProfile()}
             >
               <Avatar
-                src="/path-to-avatar.jpg"
+                src={"http://localhost:8080/image/user/" + users?.currentUser?.imgUrl}
                 sx={{ width: 30, height: 30 }}
               />
               <Typography sx={{ color: "#388e3c", fontWeight: "bold" }}>

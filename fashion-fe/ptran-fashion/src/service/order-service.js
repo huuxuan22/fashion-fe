@@ -9,7 +9,7 @@ export const addProduct = async (orderDetailDTO,productDetailDTO,token) => {
             {
                 headers: {
                     Authorization: `Bearer ${token}`,
-                    "Content-Type": "multipart/form-data",
+                    "Content-Type": "application/json",
                 },
             }
         );
@@ -27,13 +27,14 @@ export const addProduct = async (orderDetailDTO,productDetailDTO,token) => {
 
 export const deleteCart = async (cartId,token) => {
     try {
-        const res = await axios.delete(
-            `${BASE_API_URL}/api/order/cart?cartIds=${cartId}`,
-            
+        console.log("hehehehe");
+        
+        const res = await axios.post(
+            `${BASE_API_URL}/api/order/cart`,cartId,
             {
                 headers: {
                     Authorization: `Bearer ${token}`,
-                    "Content-Type": "multipart/form-data",
+                    "Content-Type": "application/json",
                 },
             }
         );

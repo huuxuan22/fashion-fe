@@ -9,12 +9,45 @@ import {
   faEye,
   faEyeSlash,
 } from "@fortawesome/free-solid-svg-icons";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { useSelector } from "react-redux";
+import * as userService from "../../service/user-service";
+import * as loginService from "./../../service/login-service";
+import { Backdrop, CircularProgress } from "@mui/material";
+import { currentUser } from './../../redux/User/Action';
 const ChangePassword = () => {
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const navigate = useNavigate();
+  const token = localStorage.getItem("token");
+  const { users } = useSelector((store) => store);
   const [showPassword, setShowPassword] = useState(false);
-  const onSubmit = (data) => {
-    console.log("Thông tin đăng nhập:", data);
-    alert("Đăng nhập thành công!");
+  const onSubmit = async (data) => {
+    console.log(users);
+    
+    if (isSubmitting) return; // Ngăn không cho gửi nhiều lần
+    setIsSubmitting(true); // Bắt đầu gửi
+    try {
+      const checkPassword = await userService.changePassword(
+        token,
+        data.oldPassword
+      );
+      if (checkPassword.success) {
+        await loginService.sendCodeAgain(users.currentUser.email).then((dataCheck) => {
+          navigate(`/verify-code`, {
+            state: {
+              account: {
+                email: users.email,
+                newPassword: data.newPassword,
+              },
+            },
+          });
+        });
+      }
+    } catch (error) {
+
+    } finally {
+      setIsSubmitting(false); // Kết thúc gửi
+    }
   };
 
   // Validation schema với Yup
@@ -51,10 +84,6 @@ const ChangePassword = () => {
     setShowPassword(!showPassword);
   };
 
-  const handleLogin = (provider) => {
-    alert(`Bạn đã chọn đăng nhập bằng ${provider}`);
-    // Thêm logic xử lý đăng nhập tại đây
-  };
   return (
     <div className="change-password">
       <img
@@ -63,7 +92,12 @@ const ChangePassword = () => {
         className="background-image"
       />
       <div className="row form-change-password">
-        <Link to="/" className="back-link">
+        <Link
+          onClick={() => {
+            navigate(-1);
+          }}
+          className="back-link mb-5"
+        >
           <FontAwesomeIcon icon={faArrowLeft} /> Come back
         </Link>
         <h1>PTRAN-FASHION</h1>
@@ -170,6 +204,17 @@ const ChangePassword = () => {
           </form>
         </div>
       </div>
+
+      <Backdrop
+        sx={{
+          color: "#fff",
+          zIndex: (theme) => theme.zIndex.drawer + 1,
+          backgroundColor: "rgba(0, 0, 0, 0.5)",
+        }}
+        open={isSubmitting}
+      >
+        <CircularProgress color="inherit" />
+      </Backdrop>
     </div>
   );
 };

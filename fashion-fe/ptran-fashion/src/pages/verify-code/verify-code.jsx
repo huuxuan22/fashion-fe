@@ -5,15 +5,18 @@ import { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import * as loginService from "./../../service/login-service";
 import { faSpinner } from "@fortawesome/free-solid-svg-icons"; // Thêm import này
+import * as userService from "./../../service/user-service";
+import { Token } from '@mui/icons-material';
 const VerifyCode = () => {
   const [code, setCode] = useState(["", "", "", "", "", ""]);
   const location = useLocation();
-  const userDTO = location.state?.userDTO;
+  const userDTO = location.state?.userDTO || {};
+  const account = location.state.account  || {}; 
   const [showErrors, setShowErrors] = useState(false);
   const [error, setError] = useState("");
   const [successMessage, setSuccessMessage] = useState(""); // Thêm state cho thông báo thành công
   const navigate = useNavigate();
-
+  const token = localStorage.getItem("token");
   const handleChange = (e, index) => {
     const newCode = [...code];
     newCode[index] = e.target.value;
@@ -29,11 +32,15 @@ const VerifyCode = () => {
     const verificationCode = code.join("");
 
     try {
-      const response = await loginService.saveAfterCheck(
+      const response = null;
+      if (account) {
+        response = await userService.updatePassword(token, account.newPassword,verificationCode);
+      } else {
+        response = await loginService.saveAfterCheck(
         userDTO,
         verificationCode
       );
-
+      }
       if (!response.success) {
         setShowErrors(true);
         setError(response.data);
@@ -41,6 +48,10 @@ const VerifyCode = () => {
         document.getElementById("code-input-0").focus();
       } else {
         localStorage.setItem("token", response.data);
+      }
+      if (account) {
+        navigate(-2)
+      }else {
         navigate("/");
       }
     } catch (err) {
@@ -90,7 +101,7 @@ const VerifyCode = () => {
         className="background-image"
       />
       <form onSubmit={handleSubmit} className="form-verify-code">
-        <Link to="/" className="vc-back-link" style={{ color: "#00917b" }}>
+        <Link onClick={() => navigate(-2)} className="back-link">
           <FontAwesomeIcon icon={faArrowLeft} /> Come back
         </Link>
         <div className="vc-title" style={{ color: "#00917b" }}>

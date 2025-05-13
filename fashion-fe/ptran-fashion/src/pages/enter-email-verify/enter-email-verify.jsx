@@ -2,13 +2,15 @@ import { useForm } from "react-hook-form";
 import "./enter-email-verify.css";
 import * as Yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
+import { useLocation } from "react-router-dom";
 const EnterEmailVerify = () => {
   const validationSchema = Yup.object().shape({
     email: Yup.string()
       .email("*You haven't entered the correct email format")
       .required("*You haven't entered your email"),
   });
-
+  const location = useLocation();
+  const { account } = location.state || {}; // Lấy email từ state nếu có
   const {
     register,
     handleSubmit,

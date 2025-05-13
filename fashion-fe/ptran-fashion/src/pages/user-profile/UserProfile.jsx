@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Box,
   Typography,
@@ -17,6 +17,10 @@ import {
   TextareaAutosize,
   FormControl,
   InputLabel,
+  DialogContent,
+  DialogTitle,
+  Dialog,
+  DialogActions,
 } from "@mui/material";
 import {
   LocalShipping,
@@ -34,14 +38,26 @@ import Footer from "../../layout/Footer";
 import Address from "../../component/Address";
 import { useNavigate } from "react-router-dom";
 import OrderDetail from "../../features/OrderDetail";
+import * as userServiceRedux from "./../../redux/User/Action";
+import { useDispatch, useSelector } from "react-redux";
+import * as loginService from "./../../service/login-service";
 const UserProfile = () => {
   const navigate = useNavigate();
   const primaryColor = "#005244";
   const lightPrimary = "#e0f2f1";
   const [activeTab, setActiveTab] = useState("orders");
-
+  const token = localStorage.getItem("token");
+  const { users } = useSelector((store) => store);
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [detailOpen, setDetailOpen] = useState(false);
+  const [open, setOpen] = useState(false);
+  
+  const handleLogout =async () => {
+    await loginService.logOut(token).then((data) => {
+      localStorage.removeItem("token");
+      navigate("/login")
+    });
+  };
   const handleOrderClick = (order) => {
     setSelectedOrder(order);
     setDetailOpen(true);
@@ -83,10 +99,15 @@ const UserProfile = () => {
                 p: 2,
                 borderRadius: 2,
                 border: `1px solid ${lightPrimary}`,
+                cursor: "pointer",
               }}
             >
               <Box sx={{ display: "flex", alignItems: "center", mb: 3 }}>
                 <Avatar
+                  src={
+                    "http://localhost:8080/image/user/" +
+                    users?.currentUser?.imgUrl
+                  }
                   sx={{
                     width: 56,
                     height: 56,
@@ -98,7 +119,7 @@ const UserProfile = () => {
                   A
                 </Avatar>
                 <Typography variant="h6" sx={{ color: primaryColor }}>
-                  Ashok
+                  {users.currentUser.username}
                 </Typography>
               </Box>
 
@@ -187,7 +208,33 @@ const UserProfile = () => {
                   <ListItemText
                     primary="Logout"
                     primaryTypographyProps={{ color: "#d32f2f" }}
+                    onClick={() => setOpen(true)}
                   />
+
+                  <Dialog open={open} onClose={() => setOpen(false)}>
+                    <DialogTitle style={{ color: "#007160" }}>
+                      Xác nhận đăng xuất
+                    </DialogTitle>
+                    <DialogContent>
+                      Nếu bạn đăng xuất, mọi thay đổi chưa lưu sẽ bị mất.
+                      <br />
+                      Bạn có chắc chắn muốn tiếp tục?
+                    </DialogContent>
+                    <DialogActions>
+                      <Button
+                        onClick={() => setOpen(false)}
+                        style={{ color: "#007160" }}
+                      >
+                        Hủy
+                      </Button>
+                      <Button
+                        onClick={handleLogout}
+                        style={{ color: "#007160" }}
+                      >
+                        Đăng xuất
+                      </Button>
+                    </DialogActions>
+                  </Dialog>
                 </ListItem>
               </List>
             </Paper>
