@@ -45,6 +45,7 @@ import Contact from "./pages/contact/Contact.jsx";
 import CouponDetailPage from "./pages/coupoun-detail/CouponDetail.jsx";
 import CreateCollectionPage from "./component/CreateCollection.jsx";
 import CollectionDetail from "./pages/collection-detail/CollectionDetail.jsx";
+import PaymentResult from "./features/PaymentResult.jsx";
 function App() {
   const [showFooter, setShowFooter] = useState(true);
   return (
@@ -56,6 +57,8 @@ function App() {
           <Route path="/coupon-detail" element={<CouponDetailPage />}></Route>
           <Route path="/collection-detail" element={<CollectionDetail />}></Route>
           <Route path="/create-collection" element={<CreateCollectionPage />}></Route>
+          <Route path="/payment-result" element={<PaymentResult />} />
+
           {/*shopping Cart  */}
           <Route path="/shopping-cart" element={<ShoppingCart />} />
           <Route path="/search" element={<Search />} />

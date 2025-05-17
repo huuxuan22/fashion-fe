@@ -15,78 +15,7 @@ import { useNavigate } from 'react-router-dom';
 import * as cartServiceRedux from  "./../redux/Cart/Action.js"
 import { useDispatch } from 'react-redux';
 import SuccessNotification from '../component/SuccessNotification.jsx';
-const products = [
-  {
-    id: 1,
-    name: 'Short Kaki Nam Gài Tran Av',
-    price: '188.000 VND',
-    image: 'https://th.bing.com/th/id/R.a6b340e08a67440dd3512122747e43bc?rik=qthlNrMwrrM2NQ&pid=ImgRaw&r=0',
-    trending: true
-  },
-  {
-    id: 2,
-    name: 'Short Kaki Nam Gài Rút Dây C...',
-    price: '259.000 VND',
-    image: 'https://th.bing.com/th/id/R.a6b340e08a67440dd3512122747e43bc?rik=qthlNrMwrrM2NQ&pid=ImgRaw&r=0',
-    trending: false
-  },
-  {
-    id: 3,
-    name: 'Áo Polo Regular Nam Phối 2 V...',
-    price: '249.000 VND',
-    image: 'https://th.bing.com/th/id/R.a6b340e08a67440dd3512122747e43bc?rik=qthlNrMwrrM2NQ&pid=ImgRaw&r=0',
-    trending: true
-  },
-  {
-    id: 4,
-    name: 'Áo Polo Basic Nữ Vải Thun Cá...',
-    price: '195.000 VND',
-    image: 'https://th.bing.com/th/id/R.a6b340e08a67440dd3512122747e43bc?rik=qthlNrMwrrM2NQ&pid=ImgRaw&r=0',
-    trending: false
-  },
-  {
-    id: 5,
-    name: 'Áo Thun Nữ Croptop Nữ Sn C...',
-    price: '99.000 VND',
-    image: 'https://th.bing.com/th/id/R.a6b340e08a67440dd3512122747e43bc?rik=qthlNrMwrrM2NQ&pid=ImgRaw&r=0',
-    trending: true
-  },
-  {
-    id: 6,
-    name: 'Áo Thun Nam Cổ Tròn',
-    price: '120.000 VND',
-    image: 'https://th.bing.com/th/id/R.a6b340e08a67440dd3512122747e43bc?rik=qthlNrMwrrM2NQ&pid=ImgRaw&r=0',
-    trending: false
-  },
-  {
-    id: 7,
-    name: 'Quần Jeans Nam Slim Fit',
-    price: '350.000 VND',
-    image: 'https://th.bing.com/th/id/R.a6b340e08a67440dd3512122747e43bc?rik=qthlNrMwrrM2NQ&pid=ImgRaw&r=0',
-    trending: true
-  },
-  {
-    id: 8,
-    name: 'Áo Khoác Nam Dù',
-    price: '450.000 VND',
-    image: 'https://th.bing.com/th/id/R.a6b340e08a67440dd3512122747e43bc?rik=qthlNrMwrrM2NQ&pid=ImgRaw&r=0',
-    trending: false
-  },
-  {
-    id: 9,
-    name: 'Váy Nữ Dáng Xòe',
-    price: '280.000 VND',
-    image: 'https://th.bing.com/th/id/R.a6b340e08a67440dd3512122747e43bc?rik=qthlNrMwrrM2NQ&pid=ImgRaw&r=0',
-    trending: true
-  },
-  {
-    id: 10,
-    name: 'Áo Len Nữ Cổ Lọ',
-    price: '320.000 VND',
-    image: 'https://th.bing.com/th/id/R.a6b340e08a67440dd3512122747e43bc?rik=qthlNrMwrrM2NQ&pid=ImgRaw&r=0',
-    trending: false
-  }
-];
+
 
 const ProductCard = styled(Card)({
   position: 'relative',

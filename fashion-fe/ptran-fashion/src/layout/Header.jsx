@@ -23,16 +23,26 @@ import { useDispatch, useSelector } from "react-redux";
 import * as cartServiceRedux from "./../redux/Cart/Action";
 import * as userServiceRedux from "./../redux/User/Action";
 import NotificationDropdown from "../component/NotificationDropdown";
+import NotificationsIcon from '@mui/icons-material/Notifications';
+import * as notificationSerivceRedux from "./../redux/Notification/Action";
 const Header = () => {
+  const [notificationOpen, setNotificationOpen] = useState(false);
   const navigate = useNavigate();
   const [anchorEl, setAnchorEl] = useState(null);
   const [activeCategory, setActiveCategory] = useState(null);
   const [categories, setCategories] = useState([]);
   const token = localStorage.getItem("token");
   const dispatch = useDispatch();
+  const { notificationNew } = useSelector((store) => store.notification);
   const loadData = async () => {
     await dispatch(cartServiceRedux.getAllCart(token));
     await dispatch(userServiceRedux.currentUser(token));
+    await dispatch(
+      notificationSerivceRedux.getAllNotificationNew({ token: token })
+    );
+    await dispatch(
+      notificationSerivceRedux.getAllNotification({ token, size: 7, page: 0 })
+    );
   };
   const loadCategories = async () => {
     await categoryService.getAllCategory(token).then((data) => {
@@ -53,6 +63,9 @@ const Header = () => {
     }
   };
 
+  useEffect(() => {
+    console.log("Notification count changed:", notificationNew);
+  }, [notificationNew]);
   const handleClose = () => {
     setAnchorEl(null);
     setActiveCategory(null);
@@ -73,11 +86,16 @@ const Header = () => {
     navigate("/profile");
   };
   const handleIntroduce = () => {
-    navigate('/introduce')
-  }
+    navigate("/introduce");
+  };
   const handleContact = () => {
-    navigate('/contact')
+    navigate("/contact");
+  };
+
+  const orderLookup = () => {
+    navigate('/profile')
   }
+
   return (
     <>
       <AppBar
@@ -159,7 +177,7 @@ const Header = () => {
                 },
                 transition: "all 0.3s ease",
               }}
-              onClick={ () => handleIntroduce()}
+              onClick={() => handleIntroduce()}
             >
               Introduction
             </Button>
@@ -183,7 +201,9 @@ const Header = () => {
                 },
                 transition: "all 0.3s ease",
               }}
-              onClick={() => {handleContact()}}
+              onClick={() => {
+                handleContact();
+              }}
             >
               Contact
             </Button>
@@ -208,6 +228,7 @@ const Header = () => {
                 },
                 transition: "all 0.3s ease",
               }}
+              onClick={() => orderLookup()}
             >
               Order Lookup
             </Button>
@@ -230,7 +251,10 @@ const Header = () => {
               onClick={() => handleProfile()}
             >
               <Avatar
-                src={"http://localhost:8080/image/user/" + users?.currentUser?.imgUrl}
+                src={
+                  "http://localhost:8080/image/user/" +
+                  users?.currentUser?.imgUrl
+                }
                 sx={{ width: 30, height: 30 }}
               />
               <Typography sx={{ color: "#388e3c", fontWeight: "bold" }}>
@@ -251,12 +275,12 @@ const Header = () => {
             </IconButton>
 
             {/* Become Seller Button */}
-            <Button
-              variant="outlined"
-              sx={{ borderColor: "#388e3c", color: "#388e3c" }}
-            >
-              <NotificationDropdown />
-            </Button>
+
+            <NotificationDropdown
+              open={notificationOpen}
+              onClose={() => setNotificationOpen(false)}
+              length={notificationNew?.length}
+            />
           </Box>
         </Toolbar>
       </AppBar>

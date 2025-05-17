@@ -38,6 +38,7 @@ import * as orderService from "./../../service/order-service";
 import * as userService from "./../../service/user-service";
 import Header from "./../../layout/Header";
 import { ca } from "date-fns/locale";
+import ErrorNotification from "../../component/ErrorNotification";
 /* Bạn có thể đặt trong App.css hoặc style.css */
 const shake = keyframes`
   0%, 100% { transform: translateX(0); }
@@ -46,6 +47,7 @@ const shake = keyframes`
 `;
 const PaymentPage = () => {
   const location = useLocation();
+  const [openError, setOpenError] = useState(false);
   const order = location.state.order;
   const place = location.state.place;
   const cartIds = location.state.cartIds;
@@ -69,7 +71,9 @@ const PaymentPage = () => {
     discount: 0,
     total: 0,
   });
-
+  const onCloseError = () => {
+    setOpenError(false);
+  };
   useEffect(() => {
     const prices = getTotalPrice();
     setPriceDetails({
@@ -78,6 +82,7 @@ const PaymentPage = () => {
       total: prices.total,
     });
   }, [order, deal, appliedVoucher]);
+  // hàm tính tổng tiền của sản phẩm
   const getTotalPrice = () => {
     if (!order) return 0;
     // 1. Tính tổng giá gốc
@@ -230,6 +235,7 @@ const PaymentPage = () => {
     }
   };
 
+  // định dạng ngày tháng từ Locate datetimne sang ngày
   const formatDateRange = (startTime, endTime) => {
     const start = new Date(...startTime);
     const end = new Date(...endTime);
@@ -294,6 +300,7 @@ const PaymentPage = () => {
     formState: { errors },
   } = useForm({ resolver: yupResolver(schema) });
 
+  // hàm để áp voucher và xử lý vouchẻ
   const handleApplyVoucher = async () => {
     if (!voucherCode.trim()) {
       setErrorMessage("Vui lòng nhập mã giảm giá");
@@ -348,13 +355,26 @@ const PaymentPage = () => {
       phone: "0987654321",
     },
   ];
+
+  // lấy chi tiết 1 đơn hàng của order trong VNPay
+  const generateShortProductStrings = (productDetails) => {
+    // Kiểm tra nếu không phải mảng hoặc mảng rỗng
+    if (!Array.isArray(productDetails) || productDetails.length === 0) {
+      return "[...]";
+    }
+    // Tạo mảng các string mô tả sản phẩm
+    const productStrings = productDetails.map((item) => {
+      if (!item || !item.product) return "[...]";
+      return `[${item.product.productName} : ${item.stock}]`;
+    });
+
+    // Nối các string thành một string duy nhất, cách nhau bởi dấu phẩy
+    return productStrings.join(", ");
+  };
+
   // dữ liệu dùng cho thanh toán been thứ 3
   const theme = useTheme();
   const [paymentMethod, setPaymentMethod] = useState("cash");
-  const [cardNumber, setCardNumber] = useState("");
-  const [expiryDate, setExpiryDate] = useState("");
-  const [cvv, setCvv] = useState("");
-  const [phoneNumber, setPhoneNumber] = useState("");
   const [selectedAddress, setSelectedAddress] = useState("");
 
   const onSubmit = async (data) => {
@@ -364,35 +384,68 @@ const PaymentPage = () => {
       const productDetailDTO = Array.isArray(order) ? order : [order]; // đảm bảo luôn là mảng
       const finalTotalPrice = priceDetails.total;
       console.log("tổng tiền của bạn là: ", finalTotalPrice);
-      
-      sendMessage(`/app/purchase`, {
-        productDetail: productDetailDTO,
-        orderDetail: {
-          commune: selectCommune,
-          district: dis,
-          province: prov,
-          numberPhone: data.numberPhone,
-          status: data.status,
-          street: data.street,
-          paymentType: data.paymentType,
-          totalPrice: finalTotalPrice,
-        },
-        token: token,
-      });
+      localStorage.setItem(
+          "vnOrderData",
+          JSON.stringify({
+            productDetail: productDetailDTO,
+            orderDetail: {
+              commune: selectCommune,
+              district: dis,
+              province: prov,
+              numberPhone: data.numberPhone,
+              status: data.status,
+              street: data.street,
+              paymentType: data.paymentType,
+              totalPrice: finalTotalPrice,
+            },
+            appliedVoucher,
+            place,
+            cartIds,
+          })
+        );
+
+
+      if (paymentMethod === "cash") {
+        sendMessage(`/app/purchase`, {
+          productDetail: productDetailDTO,
+          orderDetail: {
+            commune: selectCommune,
+            district: dis,
+            province: prov,
+            numberPhone: data.numberPhone,
+            status: data.status,
+            street: data.street,
+            paymentType: data.paymentType,
+            totalPrice: finalTotalPrice,
+          },
+          token: token,
+        });
+      } else if (paymentMethod === "momo") {
+        setOpenError(true);
+      } else if (paymentMethod === "vnpay") {
+        const shortProductStrings = generateShortProductStrings(productDetailDTO);
+        const data = await userService.paymentVNPay({
+          money: finalTotalPrice,
+          orderInf: shortProductStrings,
+          token: token,
+        });
+
+        
+        window.location.href = data.data;
+      }
 
       if (appliedVoucher !== null) {
-        await userService.decreaseCoupon(token,appliedVoucher);
+        await userService.decreaseCoupon(token, appliedVoucher);
       }
       if (place === true) {
         await orderService.deleteCart(cartIds, token);
-      } 
-
+      }
     } catch (error) {
       console.error("Lỗi khi lấy thông tin địa phương:", error);
     }
   };
-   console.log("Vouchar code: ", appliedVoucher);
-   
+  console.log("Vouchar code: ", appliedVoucher);
+
   const formatCurrency = (amount) => {
     return new Intl.NumberFormat("vi-VN", {
       style: "currency",
@@ -402,10 +455,7 @@ const PaymentPage = () => {
 
   console.log("place: ", place);
   console.log("cartIds: ", cartIds);
-  
-  
-  
-  
+
   return (
     <div>
       <Header></Header>
@@ -597,32 +647,42 @@ const PaymentPage = () => {
               </CardContent>
             </Card>{" "}
             {/* thanh toán bằng momo VNPay */}
-            <Card variant="outlined" sx={{ mb: 2 }}>
-              <CardContent sx={{ p: 2 }}>
-                <Typography variant="subtitle1" fontWeight="bold" gutterBottom>
+            <Card
+              variant="outlined"
+              sx={{ mb: 2, borderRadius: 3, borderColor: "#f0f0f0" }}
+            >
+              <CardContent sx={{ p: 3 }}>
+                <Typography
+                  variant="h6"
+                  fontWeight="bold"
+                  gutterBottom
+                  sx={{ color: "#333", mb: 2 }}
+                >
                   Phương thức thanh toán
                 </Typography>
 
-                <RadioGroup value={paymentMethod} sx={{ gap: 1 }}>
+                <RadioGroup value={paymentMethod} sx={{ gap: 2 }}>
                   {/* VNPay */}
                   <Paper
-                    onClick={() => setValue("paymentType", "VNPAY")}
+                    onClick={() => {
+                      setPaymentMethod("vnpay");
+                      setValue("paymentType", "VNPAY");
+                    }}
+                    elevation={0}
                     sx={{
-                      p: 2,
+                      p: 2.5,
                       borderRadius: 2,
-                      border: `2px solid ${
-                        paymentMethod === "vnpay"
-                          ? "#0064D2"
-                          : theme.palette.divider
+                      border: `1px solid ${
+                        paymentMethod === "vnpay" ? "#0066cc" : "#e0e0e0"
                       }`,
-                      boxShadow:
-                        paymentMethod === "vnpay"
-                          ? "0 4px 12px rgba(0, 100, 210, 0.2)"
-                          : "none",
-                      transition: "all 0.3s",
+                      backgroundColor:
+                        paymentMethod === "vnpay" ? "#f5faff" : "#fff",
+                      transition: "all 0.2s ease",
                       cursor: "pointer",
                       "&:hover": {
-                        transform: "scale(1.01)",
+                        borderColor:
+                          paymentMethod === "vnpay" ? "#0066cc" : "#b3b3b3",
+                        boxShadow: "0 2px 8px rgba(0, 0, 0, 0.1)",
                       },
                     }}
                   >
@@ -630,116 +690,85 @@ const PaymentPage = () => {
                       <Radio
                         size="small"
                         checked={paymentMethod === "vnpay"}
-                        sx={{ color: "#0064D2" }}
+                        sx={{
+                          color: "#0066cc",
+                          "&.Mui-checked": {
+                            color: "#0066cc",
+                          },
+                        }}
                       />
-                      <img
-                        src="https://th.bing.com/th/id/OIP.nyUKfh7g-nzvEH44E0bNiwHaD4?rs=1&pid=ImgDetMain"
-                        alt="VNPay"
-                        style={{ height: 24, marginRight: 8 }}
-                      />
-                      <Typography
-                        variant="body1"
-                        fontWeight="bold"
-                        color="#0064D2"
-                      >
-                        Thanh toán qua VNPay
-                      </Typography>
-                      <Box sx={{ flexGrow: 1 }} />
-                      {paymentMethod === "vnpay" ? (
-                        <ExpandLess fontSize="small" />
-                      ) : (
-                        <ExpandMore fontSize="small" />
-                      )}
-                    </Box>
-
-                    <Collapse in={paymentMethod === "vnpay"}>
-                      <Grid container spacing={2} sx={{ mt: 2, pl: 4 }}>
-                        {/* Số thẻ */}
-                        <Grid item xs={12} sm={8}>
-                          <TextField
-                            fullWidth
-                            size="small"
-                            label="Số thẻ"
-                            placeholder="9704 xxxx xxxx xxxx"
-                            value={cardNumber}
-                            onChange={(e) => setCardNumber(e.target.value)}
-                          />
-                        </Grid>
-
-                        {/* Ngày hết hạn */}
-                        <Grid item xs={6} sm={2}>
-                          <TextField
-                            fullWidth
-                            size="small"
-                            label="Hết hạn"
-                            placeholder="MM/YY"
-                            value={expiryDate}
-                            onChange={(e) => setExpiryDate(e.target.value)}
-                          />
-                        </Grid>
-
-                        {/* CVV */}
-                        <Grid item xs={6} sm={2}>
-                          <TextField
-                            fullWidth
-                            size="small"
-                            label="CVV"
-                            placeholder="***"
-                            value={cvv}
-                            onChange={(e) => setCvv(e.target.value)}
-                          />
-                        </Grid>
-                      </Grid>
-
-                      {/* Gợi ý thêm cho người dùng */}
                       <Box
                         sx={{
-                          mt: 3,
-                          pl: 4,
-                          backgroundColor: "#e3f2fd",
-                          borderLeft: "4px solid #0064D2",
-                          p: 2,
-                          borderRadius: 1,
+                          display: "flex",
+                          alignItems: "center",
+                          flexGrow: 1,
                         }}
                       >
-                        <Typography variant="body2" sx={{ mb: 1 }}>
-                          <strong>Hướng dẫn:</strong>
-                        </Typography>
-                        <Typography variant="caption" display="block">
-                          - Nhập chính xác số thẻ ATM hoặc Credit/Debit có đăng
-                          ký Internet Banking.
-                        </Typography>
-                        <Typography variant="caption" display="block">
-                          - Kiểm tra ngày hết hạn và mã bảo mật CVV ở mặt sau
-                          thẻ.
-                        </Typography>
-                        <Typography variant="caption" display="block">
-                          - VNPay sẽ chuyển bạn sang trang xác thực OTP sau khi
-                          nhấn "Thanh toán".
-                        </Typography>
+                        <Box
+                          sx={{
+                            width: 40,
+                            height: 40,
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            backgroundColor: "#fff",
+                            borderRadius: "4px",
+                            border: "1px solid #f0f0f0",
+                            marginRight: 2,
+                            padding: "4px",
+                          }}
+                        >
+                          <img
+                            src="https://th.bing.com/th/id/OIP.pn3RUm1xk1HiAxWIgC6CIwHaHa?r=0&rs=1&pid=ImgDetMain"
+                            alt="VNPay"
+                            style={{
+                              maxWidth: "100%",
+                              maxHeight: "100%",
+                              objectFit: "contain",
+                            }}
+                          />
+                        </Box>
+                        <Box>
+                          <Typography
+                            variant="subtitle1"
+                            fontWeight="600"
+                            color="#333"
+                          >
+                            Thanh toán qua VNPay
+                          </Typography>
+                          <Typography
+                            variant="body2"
+                            color="text.secondary"
+                            sx={{ mt: 0.5 }}
+                          >
+                            Thanh toán an toàn bằng thẻ ngân hàng/VNPay QR
+                          </Typography>
+                        </Box>
                       </Box>
-                    </Collapse>
+                    </Box>
                   </Paper>
 
                   {/* Momo */}
                   <Paper
-                    onClick={() => setValue("paymentType", "MOMO")}
+                    onClick={() => {
+                      setPaymentMethod("momo");
+                      setValue("paymentType", "MOMO");
+                    }}
+                    elevation={0}
                     sx={{
-                      p: 2,
+                      p: 2.5,
                       borderRadius: 2,
-                      border: `2px solid ${
-                        paymentMethod === "momo"
-                          ? "#a50064"
-                          : theme.palette.divider
+                      border: `1px solid ${
+                        paymentMethod === "momo" ? "#a50064" : "#e0e0e0"
                       }`,
-                      boxShadow:
-                        paymentMethod === "momo"
-                          ? "0 4px 12px rgba(165, 0, 100, 0.2)"
-                          : "none",
-                      transition: "all 0.3s",
+                      backgroundColor:
+                        paymentMethod === "momo" ? "#fff0f6" : "#fff",
+                      transition: "all 0.2s ease",
                       cursor: "pointer",
                       "&:hover": {
-                        transform: "scale(1.01)",
+                        borderColor:
+                          paymentMethod === "momo" ? "#a50064" : "#b3b3b3",
+                        boxShadow: "0 2px 8px rgba(0, 0, 0, 0.1)",
                       },
                     }}
                   >
@@ -747,131 +776,66 @@ const PaymentPage = () => {
                       <Radio
                         size="small"
                         checked={paymentMethod === "momo"}
-                        sx={{ color: "#a50064" }}
+                        sx={{
+                          color: "#a50064",
+                          "&.Mui-checked": {
+                            color: "#a50064",
+                          },
+                        }}
                       />
-                      <img
-                        src="https://upload.wikimedia.org/wikipedia/vi/f/fe/MoMo_Logo.png"
-                        alt="Momo"
-                        style={{ height: 24, marginRight: 8 }}
-                      />
-                      <Typography
-                        variant="body1"
-                        fontWeight="bold"
-                        color="#a50064"
+                      <Box
+                        sx={{
+                          display: "flex",
+                          alignItems: "center",
+                          flexGrow: 1,
+                        }}
                       >
-                        Thanh toán qua ví MoMo
-                      </Typography>
-                      <Box sx={{ flexGrow: 1 }} />
-                      {paymentMethod === "momo" ? (
-                        <ExpandLess fontSize="small" />
-                      ) : (
-                        <ExpandMore fontSize="small" />
-                      )}
-                    </Box>
-
-                    <Collapse in={paymentMethod === "momo"}>
-                      <Box sx={{ mt: 2, pl: 4 }}>
-                        {/* Số điện thoại */}
-                        <TextField
-                          fullWidth
-                          size="small"
-                          label="Số điện thoại MoMo"
-                          value={phoneNumber}
-                          onChange={(e) => setPhoneNumber(e.target.value)}
-                          sx={{ mb: 2 }}
+                        <img
+                          src="https://upload.wikimedia.org/wikipedia/vi/f/fe/MoMo_Logo.png"
+                          alt="Momo"
+                          style={{ height: 24, marginRight: 12 }}
                         />
-
-                        {/* Tên người nhận */}
-                        <TextField
-                          fullWidth
-                          size="small"
-                          label="Tên chủ tài khoản"
-                          value="Nguyễn Văn A"
-                          disabled
-                          sx={{ mb: 2 }}
-                        />
-
-                        {/* Mã đơn hàng */}
-                        <TextField
-                          fullWidth
-                          size="small"
-                          label="Mã đơn hàng"
-                          value={`ORDER-${Date.now()}`}
-                          disabled
-                          sx={{ mb: 2 }}
-                        />
-
-                        {/* QR code (fake) */}
-                        <Box
-                          sx={{
-                            textAlign: "center",
-                            my: 2,
-                          }}
-                        >
-                          <img
-                            src="https://img.vietqr.io/image/970422-0123456789-compact.png?amount=500000&addInfo=ThanhToanMomo"
-                            alt="QR MoMo"
-                            style={{
-                              width: 160,
-                              height: 160,
-                              borderRadius: 8,
-                              border: "2px solid #a50064",
-                            }}
-                          />
+                        <Box>
                           <Typography
-                            variant="caption"
-                            display="block"
-                            sx={{ mt: 1, color: "#a50064" }}
+                            variant="subtitle1"
+                            fontWeight="600"
+                            color="#333"
                           >
-                            Quét mã để thanh toán
+                            Thanh toán qua ví MoMo
                           </Typography>
-                        </Box>
-
-                        {/* Hướng dẫn */}
-                        <Box
-                          sx={{
-                            backgroundColor: "#fff0f6",
-                            borderLeft: "4px solid #a50064",
-                            p: 2,
-                            borderRadius: 1,
-                          }}
-                        >
-                          <Typography variant="body2" sx={{ mb: 1 }}>
-                            <strong>Hướng dẫn:</strong>
-                          </Typography>
-                          <Typography variant="caption" display="block">
-                            1. Mở ứng dụng MoMo trên điện thoại.
-                          </Typography>
-                          <Typography variant="caption" display="block">
-                            2. Chọn "Quét mã" và quét mã QR bên trên.
-                          </Typography>
-                          <Typography variant="caption" display="block">
-                            3. Kiểm tra thông tin & xác nhận thanh toán.
+                          <Typography
+                            variant="body2"
+                            color="text.secondary"
+                            sx={{ mt: 0.5 }}
+                          >
+                            Thanh toán nhanh chóng bằng ví điện tử MoMo
                           </Typography>
                         </Box>
                       </Box>
-                    </Collapse>
+                    </Box>
                   </Paper>
 
                   {/* Tiền mặt */}
                   <Paper
-                    onClick={() => setValue("paymentType", "CASH")}
+                    onClick={() => {
+                      setPaymentMethod("cash");
+                      setValue("paymentType", "CASH");
+                    }}
+                    elevation={0}
                     sx={{
-                      p: 2,
+                      p: 2.5,
                       borderRadius: 2,
-                      border: `2px solid ${
-                        paymentMethod === "cash"
-                          ? "#00917B"
-                          : theme.palette.divider
+                      border: `1px solid ${
+                        paymentMethod === "cash" ? "#00917B" : "#e0e0e0"
                       }`,
-                      boxShadow:
-                        paymentMethod === "cash"
-                          ? "0 4px 12px rgba(0, 145, 123, 0.2)"
-                          : "none",
-                      transition: "all 0.3s",
+                      backgroundColor:
+                        paymentMethod === "cash" ? "#f0fdfb" : "#fff",
+                      transition: "all 0.2s ease",
                       cursor: "pointer",
                       "&:hover": {
-                        transform: "scale(1.01)",
+                        borderColor:
+                          paymentMethod === "cash" ? "#00917B" : "#b3b3b3",
+                        boxShadow: "0 2px 8px rgba(0, 0, 0, 0.1)",
                       },
                     }}
                   >
@@ -879,56 +843,77 @@ const PaymentPage = () => {
                       <Radio
                         size="small"
                         checked={paymentMethod === "cash"}
-                        sx={{ color: "#00917B" }}
+                        sx={{
+                          color: "#00917B",
+                          "&.Mui-checked": {
+                            color: "#00917B",
+                          },
+                        }}
                       />
-                      <img
-                        src="https://cdn-icons-png.flaticon.com/512/2703/2703983.png"
-                        alt="Tiền mặt"
-                        style={{ height: 24, marginRight: 8 }}
-                      />
-                      <Typography
-                        variant="body1"
-                        fontWeight="bold"
-                        color="#00917B"
-                      >
-                        Thanh toán khi nhận hàng (COD)
-                      </Typography>
-                      <Box sx={{ flexGrow: 1 }} />
-                      {paymentMethod === "cash" ? (
-                        <ExpandLess fontSize="small" />
-                      ) : (
-                        <ExpandMore fontSize="small" />
-                      )}
-                    </Box>
-
-                    <Collapse in={paymentMethod === "cash"}>
                       <Box
                         sx={{
-                          mt: 2,
-                          pl: 4,
-                          backgroundColor: "#e0f2f1",
-                          borderLeft: "4px solid #00917B",
-                          p: 2,
-                          borderRadius: 1,
+                          display: "flex",
+                          alignItems: "center",
+                          flexGrow: 1,
                         }}
                       >
-                        <Typography variant="body2" sx={{ mb: 1 }}>
-                          <strong>Lưu ý khi thanh toán COD:</strong>
-                        </Typography>
-                        <Typography variant="caption" display="block">
-                          - Vui lòng chuẩn bị đủ tiền mặt khi nhận hàng từ nhân
-                          viên giao hàng.
-                        </Typography>
-                        <Typography variant="caption" display="block">
-                          - Chỉ áp dụng cho đơn hàng dưới 5.000.000đ.
-                        </Typography>
-                        <Typography variant="caption" display="block">
-                          - Bạn có thể kiểm tra hàng trước khi thanh toán.
-                        </Typography>
+                        <img
+                          src="https://cdn-icons-png.flaticon.com/512/2703/2703983.png"
+                          alt="Tiền mặt"
+                          style={{ height: 24, marginRight: 12 }}
+                        />
+                        <Box>
+                          <Typography
+                            variant="subtitle1"
+                            fontWeight="600"
+                            color="#333"
+                          >
+                            Thanh toán khi nhận hàng (COD)
+                          </Typography>
+                          <Typography
+                            variant="body2"
+                            color="text.secondary"
+                            sx={{ mt: 0.5 }}
+                          >
+                            Thanh toán bằng tiền mặt khi nhận được hàng
+                          </Typography>
+                        </Box>
                       </Box>
-                    </Collapse>
+                    </Box>
                   </Paper>
                 </RadioGroup>
+
+                {/* Thông tin bổ sung dựa trên phương thức chọn */}
+                <Box
+                  sx={{
+                    mt: 3,
+                    p: 2,
+                    backgroundColor: "#f9f9f9",
+                    borderRadius: 2,
+                  }}
+                >
+                  {paymentMethod === "vnpay" && (
+                    <Typography variant="body2" color="text.secondary">
+                      <strong>Lưu ý:</strong> Bạn sẽ được chuyển hướng đến cổng
+                      thanh toán VNPay để hoàn tất giao dịch. Vui lòng không tắt
+                      trình duyệt cho đến khi nhận được kết quả.
+                    </Typography>
+                  )}
+                  {paymentMethod === "momo" && (
+                    <Typography variant="body2" color="text.secondary">
+                      <strong>Lưu ý:</strong> Mở ứng dụng MoMo và quét mã QR
+                      hoặc nhập số điện thoại để thanh toán. Giao dịch sẽ được
+                      xử lý ngay lập tức.
+                    </Typography>
+                  )}
+                  {paymentMethod === "cash" && (
+                    <Typography variant="body2" color="text.secondary">
+                      <strong>Lưu ý:</strong> Bạn chỉ cần thanh toán khi nhận
+                      được hàng. Vui lòng kiểm tra hàng hóa trước khi thanh
+                      toán.
+                    </Typography>
+                  )}
+                </Box>
               </CardContent>
             </Card>
           </Grid>
@@ -956,7 +941,6 @@ const PaymentPage = () => {
                               (addr) => addr.full === e.target.value
                             );
                             if (selected) {
-                              setPhoneNumber(selected.phone);
                               setSelectedAddress(selected.full);
                             }
                           }}
@@ -1245,7 +1229,7 @@ const PaymentPage = () => {
                       </Button>
                     </Grid>
 
-                    <Grid item  xs={4}></Grid>
+                    <Grid item xs={4}></Grid>
                     <Grid item xs={8}></Grid>
 
                     {appliedVoucher && (
@@ -1542,6 +1526,14 @@ const PaymentPage = () => {
           </Grid>
         </Grid>
       </Box>
+      {openError && (
+        <ErrorNotification
+          open={openError}
+          title={"KHÔNG THỂ THANH TOÁN BẰNG MOMO"}
+          message={"Hiện tại trang web chưa hỗ trợ thanh toán bằng MôM"}
+          onClose={onCloseError}
+        />
+      )}
     </div>
   );
 };

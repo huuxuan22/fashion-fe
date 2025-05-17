@@ -22,72 +22,7 @@ import * as adminService from "./../service/admin-service";
 import LocalOfferIcon from "@mui/icons-material/LocalOffer";
 import * as cartServiceRedux from "./../redux/Cart/Action"
 // Styled components
-const LuxuryNotificationCard = styled(Paper)({
-  padding: "40px",
-  borderRadius: "4px",
-  backgroundColor: "#f8f5f2",
-  height: "100%",
-  display: "flex",
-  flexDirection: "column",
-  justifyContent: "center",
-  alignItems: "center",
-  textAlign: "center",
-  position: "relative",
-  overflow: "hidden",
-  "&:before": {
-    content: '""',
-    position: "absolute",
-    top: 0,
-    left: 0,
-    right: 0,
-    height: "4px",
-    backgroundColor: "#000",
-  },
-});
-const LuxuryTitle = styled(Typography)({
-  fontFamily: '"Playfair Display", serif',
-  fontSize: "2.5rem",
-  fontWeight: 700,
-  letterSpacing: "2px",
-  color: "#000",
-  marginBottom: "8px",
-  textTransform: "uppercase",
-});
-const LuxurySubtitle = styled(Typography)({
-  fontFamily: '"Playfair Display", serif',
-  fontSize: "1.8rem",
-  fontWeight: 400,
-  letterSpacing: "1px",
-  color: "#000",
-  marginBottom: "24px",
-  textTransform: "uppercase",
-});
-const LuxuryText = styled(Typography)({
-  fontFamily: '"Cormorant Garamond", serif',
-  fontSize: "1.1rem",
-  fontWeight: 300,
-  lineHeight: "1.8",
-  color: "#333",
-  maxWidth: "600px",
-  marginBottom: "32px",
-});
-const PromotionCard = styled(Card)({
-  borderRadius: 12,
-  overflow: "hidden",
-  boxShadow: "0 4px 12px rgba(0, 0, 0, 0.1)",
-  height: "100%",
-  position: "relative",
-  "&:after": {
-    content: '""',
-    position: "absolute",
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    background:
-      "linear-gradient(to bottom, rgba(0,145,123,0.3) 0%, rgba(0,145,123,0.7) 100%)",
-  },
-});
+
 const ProductCard = styled(Card)({
   borderRadius: 12,
   overflow: "hidden",
@@ -121,29 +56,7 @@ const luxuryNotifications = [
     text: "Experience the finest fabrics and attention to detail in every stitch of our premium collection.",
   },
 ];
-const promotions = [
-  {
-    id: 1,
-    title: "Giảm giá 50%",
-    subtitle: "Cho tất cả sản phẩm",
-    image:
-      "https://th.bing.com/th/id/R.b05879ccadc3950bb58057c31db48dc2?rik=iImeoSeL2XOvXg&pid=ImgRaw&r=0",
-  },
-  {
-    id: 2,
-    title: "Mua 1 tặng 1",
-    subtitle: "Áp dụng cuối tuần",
-    image:
-      "https://th.bing.com/th/id/OIP.WlwO_bSMc__IyRg-LAXDsAHaHa?w=590&h=590&rs=1&pid=ImgDetMain",
-  },
-  {
-    id: 3,
-    title: "Freeship",
-    subtitle: "Đơn hàng từ 500K",
-    image:
-      "https://static.vecteezy.com/system/resources/previews/003/206/008/non_2x/social-media-banner-template-free-vector.jpg",
-  },
-];
+
 
 const DashboardLayout = () => {
   const [currentNotification, setCurrentNotification] = useState(0);
@@ -169,21 +82,7 @@ const DashboardLayout = () => {
     loadTopPorduct();
   }, []);
 
-  console.log("tổng deal của bạn: ", deals);
-  console.log("coupon của bạn: ", coupons);
 
-  // Thêm state và hàm xử lý
-  const sliderRef = useRef(null);
-  const handleNextNotification = () => {
-    setCurrentNotification((prev) =>
-      prev === luxuryNotifications.length - 1 ? 0 : prev + 1
-    );
-  };
-  const handlePrevNotification = () => {
-    setCurrentNotification((prev) =>
-      prev === 0 ? luxuryNotifications.length - 1 : prev - 1
-    );
-  };
 
   const couponSliderRef = useRef(null);
 

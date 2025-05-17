@@ -41,7 +41,6 @@ export const searchProduct =async (data) => {
                 Authorization: `Bearer ${data.token}`,
             }
         } );
-        console.log("Danh sách sản phẩm giảm giá",res.data);
         
         return {success: true, data: res.data}; 
     } catch (error) {
@@ -67,7 +66,6 @@ export const creaeDeal =async (formData,token) => {
                 Authorization: `Bearer ${token}`,
             }
         } );
-        console.log("Danh sách sản phẩm giảm giá",res.data);
         
         return {success: true, data: res.data}; 
     } catch (error) {
@@ -95,7 +93,6 @@ export const getAllDEAL =async (size,page,token) => {
                 Authorization: `Bearer ${token}`,
             }
         } );
-        console.log("Danh sách sản phẩm giảm giá",res.data);
         
         return {success: true, data: res.data.content}; 
     } catch (error) {
@@ -122,7 +119,6 @@ export const getAllPageOfDeal =async (token) => {
                 Authorization: `Bearer ${token}`,
             }
         } );
-        console.log("Danh sách sản phẩm giảm giá",res.data);
         
         return {success: true, data: res.data}; 
     } catch (error) {
@@ -148,7 +144,6 @@ export const updateDeal =async (deal,token) => {
                 Authorization: `Bearer ${token}`,
             }
         } );
-        console.log("Danh sách sản phẩm giảm giá",res.data);
         
         return {success: true, data: res.data}; 
     } catch (error) {
@@ -174,7 +169,6 @@ export const deleteDeal =async (dealId,token) => {
                 Authorization: `Bearer ${token}`,
             }
         } );
-        console.log("Danh sách sản phẩm giảm giá",res.data);
         
         return {success: true, data: res.data}; 
     } catch (error) {
@@ -202,7 +196,6 @@ export const createCoupon =async (formData,token) => {
                 Authorization: `Bearer ${token}`,
             }
         } );
-        console.log("Danh sách sản phẩm giảm giá",res.data);
         
         return {success: true, data: res.data}; 
     } catch (error) {
@@ -224,7 +217,6 @@ export const getAllCoupon =async (size,page,token) => {
                 Authorization: `Bearer ${token}`,
             }
         } );
-        console.log("Danh sách sản phẩm giảm giá",res.data);
         
         return {success: true, data: res.data.content}; 
     } catch (error) {
@@ -251,7 +243,6 @@ export const getAllPageOfCoupon =async (token) => {
                 Authorization: `Bearer ${token}`,
             }
         } );
-        console.log("Danh sách sản phẩm giảm giá",res.data);
         
         return {success: true, data: res.data}; 
     } catch (error) {
@@ -277,7 +268,6 @@ export const deleteCoupon =async (couponId,token) => {
                 Authorization: `Bearer ${token}`,
             }
         } );
-        console.log("Danh sách sản phẩm giảm giá",res.data);
         
         return {success: true, data: res.data}; 
     } catch (error) {
@@ -304,7 +294,6 @@ export const createCollection =async (formData,token) => {
                 Authorization: `Bearer ${token}`,
             }
         } );
-        console.log("Danh sách sản phẩm giảm giá",res.data);
         
         return {success: true, data: res.data}; 
     } catch (error) {
@@ -332,7 +321,6 @@ export const getAllCollection =async (token) => {
                 Authorization: `Bearer ${token}`,
             }
         } );
-        console.log("Danh sách sản phẩm giảm giá",res.data);
         
         return {success: true, data: res.data}; 
     } catch (error) {
@@ -359,7 +347,6 @@ export const getFirstCollection =async (token) => {
                 Authorization: `Bearer ${token}`,
             }
         } );
-        console.log("Danh sách sản phẩm giảm giá",res.data);
         
         return {success: true, data: res.data}; 
     } catch (error) {
@@ -386,7 +373,6 @@ export const getSecondCollection =async (token) => {
                 Authorization: `Bearer ${token}`,
             }
         } );
-        console.log("Danh sách sản phẩm giảm giá",res.data);
         
         return {success: true, data: res.data}; 
     } catch (error) {
@@ -399,3 +385,83 @@ export const getSecondCollection =async (token) => {
     }
 }
 
+
+
+
+/**
+ * Tìm kiếm ản phẩm
+ * @param {*} data 
+ * @returns 
+ */
+export const countAllOrder =async (token,param) => {
+    try {
+        console.log("đã vào đây: ",param);
+        
+        const res = await axios.get(`${BASE_API_URL}/api/admin/count-all-order?param=${param}`,{
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${token}`,
+            }
+        } );
+        
+        return {success: true, data: res.data}; 
+    } catch (error) {
+        console.log("Lỗi khi createChat :", error);
+        if (error.response) {
+            return {success: false,data: error.response.data}
+        }else {
+            return {success: false, data: "Lỗi ở server vui lòng truy cập lại"}
+        }
+    }
+}
+
+/**
+ * Tìm kiếm ản phẩm
+ * @param {*} data 
+ * @returns 
+ */
+export const deliveryOrder =async (token,orderId) => {
+    try {
+        const res = await axios.get(`${BASE_API_URL}/api/admin/delivery-order?orderId=${orderId}`,{
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${token}`,
+            }
+        } );
+        
+        return {success: true, data: res.data}; 
+    } catch (error) {
+        console.log("Lỗi khi createChat :", error);
+        if (error.response) {
+            return {success: false,data: error.response.data}
+        }else {
+            return {success: false, data: "Lỗi ở server vui lòng truy cập lại"}
+        }
+    }
+}
+
+/**
+ * Tìm kiếm ản phẩm
+ * @param {*} data 
+ * @returns 
+ */
+export const completeOrder =async (token,orderId) => {
+    try {
+        const res = await axios.get(`${BASE_API_URL}/api/admin/complete-order?orderId=${orderId}`,{
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${token}`,
+            }
+        } );
+        console.log("Danh sách sản phẩm giảm giá",res.data);
+        
+        return {success: true, data: res.data}; 
+    } catch (error) {
+        console.log("Lỗi khi createChat :", error);
+        if (error.response) {
+            return {success: false,data: error.response.data}
+        }else {
+            return {success: false, data: "Lỗi ở server vui lòng truy cập lại"}
+        }
+    }
+}

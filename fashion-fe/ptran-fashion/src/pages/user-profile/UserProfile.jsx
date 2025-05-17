@@ -41,57 +41,80 @@ import OrderDetail from "../../features/OrderDetail";
 import * as userServiceRedux from "./../../redux/User/Action";
 import { useDispatch, useSelector } from "react-redux";
 import * as loginService from "./../../service/login-service";
+import * as userService from "./../../service/user-service";
 const UserProfile = () => {
   const navigate = useNavigate();
   const primaryColor = "#005244";
   const lightPrimary = "#e0f2f1";
   const [activeTab, setActiveTab] = useState("orders");
   const token = localStorage.getItem("token");
+  const [page, setPage] = useState(0);
+  const size = 10;
+  const [totalPages, setTotalPages] = useState(0);
   const { users } = useSelector((store) => store);
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [detailOpen, setDetailOpen] = useState(false);
   const [open, setOpen] = useState(false);
-  
-  const handleLogout =async () => {
+  const [orders, setOrders] = useState([]);
+
+  const handleLogout = async () => {
     await loginService.logOut(token).then((data) => {
       localStorage.removeItem("token");
-      navigate("/login")
+      navigate("/login");
     });
   };
+
   const handleOrderClick = (order) => {
     setSelectedOrder(order);
     setDetailOpen(true);
   };
+
   const handleCloseDetail = () => {
     setDetailOpen(false);
   };
-  const orders = [
-    {
-      id: 1,
-      status: "SHIPPED",
-      arrival: "Arriving by Fri, Oct 04",
-      merchant: "Raam Clothing",
-      product:
-        'Cellscor RAY 1.47" AMOLED Display | 700 NITS | AOD | BT-Calling | AI Voice | Split Screen Smartwatch (Black Strap, Free Size)',
-      size: "FREE",
-    },
-    {
-      id: 2,
-      status: "CANCELLED",
-      arrival: "Arriving by Fri, Oct 04",
-      merchant: "Raam Clothing",
-      product:
-        'Cellscor RAY 1.47" AMOLED Display (y100 NITS | AOD | BT-Calling | AI Voice | Split Screen Smartwatch (Black Strap, Free Size)',
-      size: "FREE",
-    },
-  ];
+
+  const handlePageChange = (newPage) => {
+    setPage(newPage);
+  };
+
+  const loadData = async () => {
+    try {
+      // Fetch orders
+      const ordersResponse = await userService.getAllOrderUser({
+        token: token,
+        size: size,
+        page: page,
+      });
+
+      if (ordersResponse.success) {
+        setOrders(ordersResponse.data || []);
+      } else {
+        console.error("Failed to fetch orders:", ordersResponse.data);
+      }
+
+      // Fetch total pages
+      const countResponse = await userService.countAllOrder({ token: token });
+      if (countResponse.success) {
+        const totalItems = countResponse.data;
+        setTotalPages(Math.ceil(totalItems / size));
+      } else {
+        console.error("Failed to fetch total pages:", countResponse.data);
+      }
+    } catch (error) {
+      console.error("Error loading data:", error);
+    }
+  };
+
+  
+  useEffect(() => {
+    loadData();
+  }, [page]);
 
   return (
     <div>
       <Header />
       <Box sx={{ maxWidth: 1200, mx: "auto", p: 3, mb: 20, mt: 3 }}>
         <Grid container spacing={4}>
-          {/* Left Sidebar */}
           <Grid item xs={12} md={3}>
             <Paper
               elevation={3}
@@ -119,7 +142,7 @@ const UserProfile = () => {
                   A
                 </Avatar>
                 <Typography variant="h6" sx={{ color: primaryColor }}>
-                  {users.currentUser.username}
+                  {users?.currentUser?.username}
                 </Typography>
               </Box>
 
@@ -240,14 +263,20 @@ const UserProfile = () => {
             </Paper>
           </Grid>
 
-          {/* Right Content */}
           <Grid item xs={12} md={9}>
             {activeTab === "orders" && (
               <div>
-                <OrderList orders={orders} onOrderClick={handleOrderClick} />{" "}
+                <OrderList
+                  orders={orders}
+                  onOrderClick={handleOrderClick}
+                  page={page}
+                  totalPages={totalPages}
+                  onPageChange={handlePageChange}
+                />
                 <OrderDetail
                   open={detailOpen}
                   order={selectedOrder}
+                  loadData={loadData}
                   onClose={handleCloseDetail}
                 />
               </div>

@@ -10,13 +10,14 @@ const OrderSuccess = () => {
   const [show, setShow] = React.useState(false);
     const location = useLocation();
     const product = location.state.product;
-
+    console.log("Product: ",product);
+    
   React.useEffect(() => {
     setTimeout(() => setShow(true), 200);
   }, []);
   const handleComeback = () => {
     if (product.length === 1) {
-      navigate(-2);
+      navigate('/product-detail', {state: {productId: product[0].product.productId}});
     }else {
       navigate('/shopping-cart')
     }
@@ -131,9 +132,9 @@ const OrderSuccess = () => {
                     backgroundColor: '#027061',
                   },
                 }}
-                onClick={() => navigate('/')}
+                onClick={() => navigate('/profile')}
               >
-                Về trang chủ
+                Xem đơn hàng
               </Button>
             </Box>
           </CardContent>

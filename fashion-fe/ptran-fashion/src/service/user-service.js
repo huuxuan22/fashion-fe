@@ -262,3 +262,126 @@ export const decreaseCoupon = async (token,coupon) => {
 };
 
 
+export const updateNotification = async (token) => {
+    try {
+        console.log("đã vào đây service");
+        
+        const res = await axios.get(
+            `${BASE_API_URL}/api/users/update-notification`,
+            {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                    "Content-Type": "application/json",
+                },
+            }
+        );
+        return { success: true, data: res.data };
+    } catch (error) {
+        if (error.response) {
+            console.log(error.response.data);
+            return { success: false, data: error.response.data };
+        } else {
+            console.log(error.response.data);
+            return { success: false, data: "Lỗi máy chủ, vui lòng thử lại!" };
+        }
+    }
+};
+
+
+export const getAllOrderUser = async (data) => {
+    try {
+        console.log("đã vào đây service");
+        
+        const res = await axios.get(
+            `${BASE_API_URL}/api/users/get-all-order?size=${data.size}&page=${data.page}`,
+            {
+                headers: {
+                    Authorization: `Bearer ${data.token}`,
+                    "Content-Type": "application/json",
+                },
+            }
+        );
+        return { success: true, data: res.data.content };
+    } catch (error) {
+        if (error.response) {
+            console.log(error.response.data);
+            return { success: false, data: error.response.data };
+        } else {
+            console.log(error.response.data);
+            return { success: false, data: "Lỗi máy chủ, vui lòng thử lại!" };
+        }
+    }
+};
+
+
+export const countAllOrder = async (data) => {
+    try {
+        console.log("đã vào đây service");
+        
+        const res = await axios.get(
+            `${BASE_API_URL}/api/users/count-all-order`,
+            {
+                headers: {
+                    Authorization: `Bearer ${data.token}`,
+                    "Content-Type": "application/json",
+                },
+            }
+        );
+        return { success: true, data: res.data };
+    } catch (error) {
+        if (error.response) {
+            console.log(error.response.data);
+            return { success: false, data: error.response.data };
+        } else {
+            console.log(error.response.data);
+            return { success: false, data: "Lỗi máy chủ, vui lòng thử lại!" };
+        }
+    }
+};
+
+export const cancelOrder = async (data) => {
+    try {
+        const res = await axios.post(
+            `${BASE_API_URL}/api/users/cancel-order?orderId=${data.orderId}`,
+            {},{
+                headers: {
+                    Authorization: `Bearer ${data.token}`,
+                    "Content-Type": "application/json",
+                },
+            }
+        );
+        
+        return { success: true, data: res.data };
+    } catch (error) {
+        if (error.response) {
+            return { success: false, data: error.response.data };
+        } else {
+            console.log(error.response.data);
+            return { success: false, data: "Lỗi máy chủ, vui lòng thử lại!" };
+        }
+    }
+};
+
+
+export const paymentVNPay = async (data) => {
+    try {
+        const res = await axios.get(
+            `${BASE_API_URL}/api/payment/create-payment?money=${data.money}&orderInf=${data.orderInfor}`,
+            {},{
+                headers: {
+                    Authorization: `Bearer ${data.token}`,
+                    "Content-Type": "application/json",
+                },
+            }
+        );
+        
+        return { success: true, data: res.data };
+    } catch (error) {
+        if (error.response) {
+            return { success: false, data: error.response.data };
+        } else {
+            console.log(error.response.data);
+            return { success: false, data: "Lỗi máy chủ, vui lòng thử lại!" };
+        }
+    }
+};

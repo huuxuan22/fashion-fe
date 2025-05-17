@@ -1,0 +1,165 @@
+/* Font Import - Phông chữ sang trọng */
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Poppins:wght@300;400;500;600&display=swap');
+
+/* Biến màu sắc chủ đạo */
+:root {
+  --primary-color: #008772;         /* Màu chính - Xanh ngọc */
+  --primary-dark: #006b5a;          /* Màu tối hơn cho hover */
+  --primary-light: #e6f5f2;         /* Màu nền nhạt */
+  --secondary-color: #333333;       /* Màu chữ chính */
+  --accent-color: #d4af37;          /* Màu nhấn vàng gold */
+  --light-text: #777777;            /* Màu chữ nhạt */
+  --pure-white: #ffffff;            /* Màu trắng tinh khiết */
+  --section-padding: 8rem 0;        /* Khoảng cách section */
+}
+
+/* Cấu hình phông chữ */
+.luxury-theme {
+  --font-heading: 'Playfair Display', serif;    /* Phông tiêu đề */
+  --font-body: 'Poppins', sans-serif;           /* Phông nội dung */
+}
+
+/* Reset và nền tảng */
+body {
+  font-family: var(--font-body);
+  color: var(--secondary-color);
+  line-height: 1.8;
+  background-color: #f9f9f9;
+}
+
+/* Tiêu đề */
+.luxury-heading {
+  font-family: var(--font-heading);
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  color: var(--primary-color);
+  position: relative;
+  display: inline-block;
+}
+
+.luxury-heading:after {
+  content: '';
+  position: absolute;
+  bottom: -10px;
+  left: 0;
+  width: 50%;
+  height: 3px;
+  background: var(--accent-color);
+}
+
+/* Card sang trọng */
+.luxury-card {
+  border: none;
+  border-radius: 8px;
+  overflow: hidden;
+  transition: all 0.4s ease;
+  box-shadow: 0 10px 30px rgba(0, 135, 114, 0.1);
+  background: var(--pure-white);
+}
+
+.luxury-card:hover {
+  transform: translateY(-10px);
+  box-shadow: 0 15px 40px rgba(0, 135, 114, 0.2);
+}
+
+.luxury-card-image {
+  transition: all 0.5s ease;
+}
+
+.luxury-card:hover .luxury-card-image {
+  transform: scale(1.05);
+}
+
+/* Nút bấm cao cấp */
+.luxury-btn {
+  font-family: var(--font-body);
+  font-weight: 500;
+  letter-spacing: 1px;
+  padding: 12px 30px;
+  border-radius: 0;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  border: 2px solid transparent;
+}
+
+.luxury-btn-primary {
+  background: var(--primary-color);
+  color: var(--pure-white);
+}
+
+.luxury-btn-primary:hover {
+  background: transparent;
+  color: var(--primary-color);
+  border-color: var(--primary-color);
+}
+
+.luxury-btn-outline {
+  background: transparent;
+  color: var(--primary-color);
+  border-color: var(--primary-color);
+}
+
+.luxury-btn-outline:hover {
+  background: var(--primary-color);
+  color: var(--pure-white);
+}
+
+/* Section styling */
+.luxury-section {
+  padding: var(--section-padding);
+  position: relative;
+}
+
+.luxury-section-dark {
+  background: var(--primary-color);
+  color: var(--pure-white);
+}
+
+.luxury-section-light {
+  background: var(--primary-light);
+}
+
+/* Hiệu ứng màu xanh ngọc */
+.jade-overlay:before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, rgba(0, 135, 114, 0.8) 0%, rgba(0, 135, 114, 0.4) 100%);
+  z-index: 1;
+}
+
+/* Thanh phân cách */
+.luxury-divider {
+  height: 4px;
+  width: 80px;
+  background: var(--accent-color);
+  margin: 20px auto;
+}
+
+/* Avatar đội ngũ */
+.luxury-avatar {
+  width: 150px;
+  height: 150px;
+  border: 3px solid var(--primary-color);
+  box-shadow: 0 5px 15px rgba(0, 135, 114, 0.2);
+  transition: all 0.3s ease;
+}
+
+.luxury-avatar:hover {
+  transform: scale(1.05);
+  box-shadow: 0 8px 25px rgba(0, 135, 114, 0.3);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .luxury-section {
+    padding: 5rem 0;
+  }
+  
+  .luxury-heading {
+    font-size: 2rem;
+  }
+}
